@@ -13,6 +13,12 @@ package com.ii.subtitle.editor;
 
 import java.io.File;
 import javax.swing.JFileChooser;
+import javax.swing.JButton;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.GroupLayout;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 /**
  * 
@@ -940,244 +946,121 @@ public class Interface extends javax.swing.JFrame {
 
 			}
 		});
+		
+		JButton btnUndo = new JButton("Undo");
+		btnUndo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				CommandController controller = CommandController.getCommandController();
+				controller.undoLastCommand();
+			}
+		});
+		
+		JButton btnRedo = new JButton("Redo");
+		btnRedo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				CommandController controller = CommandController.getCommandController();
+				controller.redoLastCommand();
+			}
+		});
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(
 				getContentPane());
+		layout.setHorizontalGroup(
+			layout.createParallelGroup(Alignment.LEADING)
+				.addGroup(layout.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(layout.createParallelGroup(Alignment.LEADING)
+						.addComponent(jScrollPane2, GroupLayout.PREFERRED_SIZE, 801, GroupLayout.PREFERRED_SIZE)
+						.addGroup(layout.createSequentialGroup()
+							.addComponent(openButton, GroupLayout.PREFERRED_SIZE, 72, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(saveButton, GroupLayout.PREFERRED_SIZE, 69, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(saveAsButton)
+							.addGap(76)
+							.addComponent(saveQuoteButton)
+							.addGap(51)
+							.addComponent(btnUndo)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnRedo))
+						.addComponent(jPanel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(layout.createParallelGroup(Alignment.LEADING)
+						.addGroup(layout.createSequentialGroup()
+							.addGap(8)
+							.addGroup(layout.createParallelGroup(Alignment.TRAILING)
+								.addGroup(layout.createSequentialGroup()
+									.addComponent(FPSLabel)
+									.addGap(31))
+								.addGroup(layout.createSequentialGroup()
+									.addComponent(switchLabel)
+									.addGap(18)))
+							.addGroup(layout.createParallelGroup(Alignment.LEADING)
+								.addComponent(framesRadioButton)
+								.addComponent(timeRadioButton, GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
+								.addComponent(FPSComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+						.addGroup(layout.createParallelGroup(Alignment.TRAILING, false)
+							.addComponent(newSubAfterButton, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(newSubBeforeButton, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+						.addGroup(layout.createParallelGroup(Alignment.TRAILING, false)
+							.addComponent(deleteButton, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(moveUpButton, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(exitButton, GroupLayout.PREFERRED_SIZE, 69, GroupLayout.PREFERRED_SIZE)
+							.addComponent(moveDownButton, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+					.addContainerGap())
+		);
+		layout.setVerticalGroup(
+			layout.createParallelGroup(Alignment.LEADING)
+				.addGroup(layout.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(layout.createParallelGroup(Alignment.TRAILING)
+						.addGroup(layout.createSequentialGroup()
+							.addGroup(layout.createParallelGroup(Alignment.TRAILING)
+								.addGroup(layout.createSequentialGroup()
+									.addComponent(timeRadioButton)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(framesRadioButton)
+									.addGap(39))
+								.addGroup(layout.createSequentialGroup()
+									.addComponent(switchLabel)
+									.addGap(56)))
+							.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+								.addComponent(FPSComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(FPSLabel))
+							.addGap(45)
+							.addComponent(newSubBeforeButton)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(newSubAfterButton)
+							.addGap(36)
+							.addComponent(deleteButton)
+							.addGap(34)
+							.addComponent(moveUpButton)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(moveDownButton)
+							.addGap(40))
+						.addGroup(layout.createSequentialGroup()
+							.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+								.addComponent(openButton)
+								.addComponent(saveButton)
+								.addComponent(saveAsButton)
+								.addComponent(saveQuoteButton)
+								.addComponent(btnUndo)
+								.addComponent(btnRedo))
+							.addGap(9)
+							.addComponent(jScrollPane2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+					.addGroup(layout.createParallelGroup(Alignment.LEADING)
+						.addGroup(layout.createSequentialGroup()
+							.addPreferredGap(ComponentPlacement.RELATED, 107, Short.MAX_VALUE)
+							.addComponent(exitButton, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)
+							.addGap(51))
+						.addGroup(layout.createSequentialGroup()
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(jPanel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addContainerGap())))
+		);
 		getContentPane().setLayout(layout);
-		layout.setHorizontalGroup(layout
-				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(
-						layout.createSequentialGroup()
-								.addContainerGap()
-								.addGroup(
-										layout.createParallelGroup(
-												javax.swing.GroupLayout.Alignment.LEADING)
-												.addComponent(
-														jScrollPane2,
-														javax.swing.GroupLayout.PREFERRED_SIZE,
-														801,
-														javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addGroup(
-														layout.createSequentialGroup()
-																.addComponent(
-																		openButton,
-																		javax.swing.GroupLayout.PREFERRED_SIZE,
-																		72,
-																		javax.swing.GroupLayout.PREFERRED_SIZE)
-																.addPreferredGap(
-																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																.addComponent(
-																		saveButton,
-																		javax.swing.GroupLayout.PREFERRED_SIZE,
-																		69,
-																		javax.swing.GroupLayout.PREFERRED_SIZE)
-																.addPreferredGap(
-																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																.addComponent(
-																		saveAsButton)
-																.addGap(76, 76,
-																		76)
-																.addComponent(
-																		saveQuoteButton))
-												.addComponent(
-														jPanel1,
-														javax.swing.GroupLayout.PREFERRED_SIZE,
-														javax.swing.GroupLayout.DEFAULT_SIZE,
-														javax.swing.GroupLayout.PREFERRED_SIZE))
-								.addPreferredGap(
-										javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-								.addGroup(
-										layout.createParallelGroup(
-												javax.swing.GroupLayout.Alignment.LEADING)
-												.addGroup(
-														layout.createSequentialGroup()
-																.addGap(8, 8, 8)
-																.addGroup(
-																		layout.createParallelGroup(
-																				javax.swing.GroupLayout.Alignment.TRAILING)
-																				.addGroup(
-																						layout.createSequentialGroup()
-																								.addComponent(
-																										FPSLabel)
-																								.addGap(31,
-																										31,
-																										31))
-																				.addGroup(
-																						layout.createSequentialGroup()
-																								.addComponent(
-																										switchLabel)
-																								.addGap(18,
-																										18,
-																										18)))
-																.addGroup(
-																		layout.createParallelGroup(
-																				javax.swing.GroupLayout.Alignment.LEADING)
-																				.addComponent(
-																						framesRadioButton)
-																				.addComponent(
-																						timeRadioButton,
-																						javax.swing.GroupLayout.DEFAULT_SIZE,
-																						70,
-																						Short.MAX_VALUE)
-																				.addComponent(
-																						FPSComboBox,
-																						javax.swing.GroupLayout.PREFERRED_SIZE,
-																						javax.swing.GroupLayout.DEFAULT_SIZE,
-																						javax.swing.GroupLayout.PREFERRED_SIZE)))
-												.addGroup(
-														layout.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.TRAILING,
-																false)
-																.addComponent(
-																		newSubAfterButton,
-																		javax.swing.GroupLayout.Alignment.LEADING,
-																		javax.swing.GroupLayout.DEFAULT_SIZE,
-																		javax.swing.GroupLayout.DEFAULT_SIZE,
-																		Short.MAX_VALUE)
-																.addComponent(
-																		newSubBeforeButton,
-																		javax.swing.GroupLayout.Alignment.LEADING,
-																		javax.swing.GroupLayout.DEFAULT_SIZE,
-																		javax.swing.GroupLayout.DEFAULT_SIZE,
-																		Short.MAX_VALUE))
-												.addGroup(
-														layout.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.TRAILING,
-																false)
-																.addComponent(
-																		deleteButton,
-																		javax.swing.GroupLayout.Alignment.LEADING,
-																		javax.swing.GroupLayout.DEFAULT_SIZE,
-																		javax.swing.GroupLayout.DEFAULT_SIZE,
-																		Short.MAX_VALUE)
-																.addComponent(
-																		moveUpButton,
-																		javax.swing.GroupLayout.Alignment.LEADING,
-																		javax.swing.GroupLayout.DEFAULT_SIZE,
-																		javax.swing.GroupLayout.DEFAULT_SIZE,
-																		Short.MAX_VALUE)
-																.addComponent(
-																		exitButton,
-																		javax.swing.GroupLayout.PREFERRED_SIZE,
-																		69,
-																		javax.swing.GroupLayout.PREFERRED_SIZE)
-																.addComponent(
-																		moveDownButton,
-																		javax.swing.GroupLayout.Alignment.LEADING,
-																		javax.swing.GroupLayout.DEFAULT_SIZE,
-																		javax.swing.GroupLayout.DEFAULT_SIZE,
-																		Short.MAX_VALUE)))
-								.addContainerGap()));
-		layout.setVerticalGroup(layout
-				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(
-						layout.createSequentialGroup()
-								.addContainerGap()
-								.addGroup(
-										layout.createParallelGroup(
-												javax.swing.GroupLayout.Alignment.TRAILING)
-												.addGroup(
-														layout.createSequentialGroup()
-																.addGroup(
-																		layout.createParallelGroup(
-																				javax.swing.GroupLayout.Alignment.LEADING)
-																				.addGroup(
-																						javax.swing.GroupLayout.Alignment.TRAILING,
-																						layout.createSequentialGroup()
-																								.addComponent(
-																										timeRadioButton)
-																								.addPreferredGap(
-																										javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																								.addComponent(
-																										framesRadioButton)
-																								.addGap(39,
-																										39,
-																										39))
-																				.addGroup(
-																						javax.swing.GroupLayout.Alignment.TRAILING,
-																						layout.createSequentialGroup()
-																								.addComponent(
-																										switchLabel)
-																								.addGap(56,
-																										56,
-																										56)))
-																.addGroup(
-																		layout.createParallelGroup(
-																				javax.swing.GroupLayout.Alignment.BASELINE)
-																				.addComponent(
-																						FPSComboBox,
-																						javax.swing.GroupLayout.PREFERRED_SIZE,
-																						javax.swing.GroupLayout.DEFAULT_SIZE,
-																						javax.swing.GroupLayout.PREFERRED_SIZE)
-																				.addComponent(
-																						FPSLabel))
-																.addGap(45, 45,
-																		45)
-																.addComponent(
-																		newSubBeforeButton)
-																.addPreferredGap(
-																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																.addComponent(
-																		newSubAfterButton)
-																.addGap(36, 36,
-																		36)
-																.addComponent(
-																		deleteButton)
-																.addGap(34, 34,
-																		34)
-																.addComponent(
-																		moveUpButton)
-																.addPreferredGap(
-																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																.addComponent(
-																		moveDownButton)
-																.addGap(40, 40,
-																		40))
-												.addGroup(
-														layout.createSequentialGroup()
-																.addGroup(
-																		layout.createParallelGroup(
-																				javax.swing.GroupLayout.Alignment.BASELINE)
-																				.addComponent(
-																						openButton)
-																				.addComponent(
-																						saveButton)
-																				.addComponent(
-																						saveAsButton)
-																				.addComponent(
-																						saveQuoteButton))
-																.addGap(9, 9, 9)
-																.addComponent(
-																		jScrollPane2,
-																		javax.swing.GroupLayout.PREFERRED_SIZE,
-																		javax.swing.GroupLayout.DEFAULT_SIZE,
-																		javax.swing.GroupLayout.PREFERRED_SIZE)))
-								.addGroup(
-										layout.createParallelGroup(
-												javax.swing.GroupLayout.Alignment.LEADING)
-												.addGroup(
-														layout.createSequentialGroup()
-																.addPreferredGap(
-																		javax.swing.LayoutStyle.ComponentPlacement.RELATED,
-																		107,
-																		Short.MAX_VALUE)
-																.addComponent(
-																		exitButton,
-																		javax.swing.GroupLayout.PREFERRED_SIZE,
-																		35,
-																		javax.swing.GroupLayout.PREFERRED_SIZE)
-																.addGap(51, 51,
-																		51))
-												.addGroup(
-														layout.createSequentialGroup()
-																.addPreferredGap(
-																		javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-																.addComponent(
-																		jPanel1,
-																		javax.swing.GroupLayout.PREFERRED_SIZE,
-																		javax.swing.GroupLayout.DEFAULT_SIZE,
-																		javax.swing.GroupLayout.PREFERRED_SIZE)
-																.addContainerGap()))));
 
 		pack();
 	}// </editor-fold>
@@ -1336,6 +1219,58 @@ public class Interface extends javax.swing.JFrame {
 	boolean hasPath = false;
 	boolean isSaved = false;
 
+	public boolean isSaved() {
+		return isSaved;
+	}
+
+	public void setSaved(boolean isSaved) {
+		this.isSaved = isSaved;
+	}
+
+	public javax.swing.JTextArea getTextArea() {
+		return TextArea;
+	}
+
+	public javax.swing.JCheckBox getBoldCheckBox() {
+		return boldCheckBox;
+	}
+
+	public javax.swing.JCheckBox getItalicsCheckBox() {
+		return italicsCheckBox;
+	}
+
+	public javax.swing.JTable getjTable2() {
+		return jTable2;
+	}
+
+	public javax.swing.JTextField getStartField() {
+		return startField;
+	}
+
+	public javax.swing.JTextField getEndField() {
+		return endField;
+	}
+
+	public javax.swing.JTextField getDurationField() {
+		return durationField;
+	}
+
+	public javax.swing.JCheckBox getUnderlineCheckBox() {
+		return underlineCheckBox;
+	}
+
+	public Input getIn() {
+		return in;
+	}
+
+	public int getCurrentSubtitle() {
+		return currentSubtitle;
+	}
+	
+	public void setCurrentSubtitle(int currentSubtitle) {
+		this.currentSubtitle = currentSubtitle;
+	}
+	
 	public void fillList() {
 		if (currentFile.getPath().endsWith(".srt")) {
 			String text = in.read(currentFile);
