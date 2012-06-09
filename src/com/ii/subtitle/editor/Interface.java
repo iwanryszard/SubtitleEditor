@@ -245,6 +245,7 @@ public class Interface extends javax.swing.JFrame {
 					fillList();
 					
 					((SubsTableModel)jTable2.getModel()).setSubtitleList(new SubtitleList(in.subList));
+					CommandController.getCommandController().clearCommandHistory();
 //					if (currentFile.getPath().endsWith(".srt")) {
 //						for (Subtitle s : in.subList) {
 //							model.addRow(new Object[] { s.subtitleNumber,
@@ -650,28 +651,11 @@ public class Interface extends javax.swing.JFrame {
 		timeRadioButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				if (isFrames) {
-					isFrames = false;
-					framesRadioButton.setSelected(false);
-					timeRadioButton.setSelected(true);
-					hasTimes = true;
-					isSaved = false;
-					for (Subtitle s : in.subList) {
-						s.framesToTime(in.framesPerSecond);
-					}
-					for (int i = 0; i < in.subList.size(); i++) {
-						jTable2.getModel().setValueAt(
-								in.subList.get(i).startTimeToString(), i, 1);
-						jTable2.getModel().setValueAt(
-								in.subList.get(i).endTimeToString(), i, 2);
-					}
-					if (currentSubtitle >= 0) {
-						startField.setText(in.subList.get(currentSubtitle)
-								.startTimeToString());
-						endField.setText(in.subList.get(currentSubtitle)
-								.endTimeToString());
-						durationField.setText(in.subList.get(currentSubtitle)
-								.durationTimeToString());
-					}
+					
+					SwitchToTimeCommand switchToTime = new SwitchToTimeCommand(Interface.this, (SubsTableModel)jTable2.getModel(), 
+							currentSubtitle, in.framesPerSecond);
+					CommandController controller = CommandController.getCommandController();
+					controller.executeCommand(switchToTime);
 				}
 			}
 		});
@@ -681,30 +665,11 @@ public class Interface extends javax.swing.JFrame {
 				.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent evt) {
 						if (!isFrames) {
-							isFrames = true;
-							timeRadioButton.setSelected(false);
-							framesRadioButton.setSelected(true);
-							hasFrames = true;
-							isSaved = false;
-							for (Subtitle s : in.subList) {
-								s.timeToFrames(in.framesPerSecond);
-							}
-							for (int i = 0; i < in.subList.size(); i++) {
-								jTable2.getModel().setValueAt(
-										in.subList.get(i).startFrame, i, 1);
-								jTable2.getModel().setValueAt(
-										in.subList.get(i).endFrame, i, 2);
-							}
-							if (currentSubtitle >= 0) {
-								startField.setText(in.subList.get(
-										currentSubtitle).startFrameToString());
-								endField.setText(in.subList
-										.get(currentSubtitle)
-										.endFrameToString());
-								durationField.setText(in.subList.get(
-										currentSubtitle)
-										.durationFramesToString());
-							}
+							
+							SwitchToFramesCommand switchToFrames = new SwitchToFramesCommand(Interface.this, (SubsTableModel)jTable2.getModel(), 
+									currentSubtitle, in.framesPerSecond);
+							CommandController controller = CommandController.getCommandController();
+							controller.executeCommand(switchToFrames);
 						}
 					}
 				});
@@ -718,6 +683,7 @@ public class Interface extends javax.swing.JFrame {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				if (in.subList.size() > 0) {
 					saveAs();
+					CommandController.getCommandController().clearCommandHistory();
 				}
 			}
 		});
@@ -803,6 +769,7 @@ public class Interface extends javax.swing.JFrame {
 		});
 		
 		JButton btnUndo = new JButton("Undo");
+		CommandController.getCommandController().registerUndoButton(btnUndo);
 		btnUndo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
@@ -812,6 +779,7 @@ public class Interface extends javax.swing.JFrame {
 		});
 		
 		JButton btnRedo = new JButton("Redo");
+		CommandController.getCommandController().registerRedoButton(btnRedo);
 		btnRedo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
@@ -1124,11 +1092,17 @@ public class Interface extends javax.swing.JFrame {
 		underlineCheckBox.setSelected(isUnderlineSelected);
 	}
 	
+	public void manipulateRadioButtonsValues(boolean isTimeSelected, boolean isFramesSelected)
+	{
+		timeRadioButton.setSelected(isTimeSelected);
+		framesRadioButton.setSelected(isFramesSelected);
+	}
+	
 	public Memento saveToMemento()
 	{
 		return new Memento(currentSubtitle, startField.getText(), endField.getText(), durationField.getText(),
 				TextArea.getText(), boldCheckBox.isSelected(), italicsCheckBox.isSelected(), underlineCheckBox.isSelected(), 
-				isSaved, hasFrames, hasTimes);
+				isSaved, isFrames, hasFrames, hasTimes);
 	}
 	
 	public void restoreFromMemento(Memento memento)
@@ -1142,8 +1116,11 @@ public class Interface extends javax.swing.JFrame {
 		italicsCheckBox.setSelected(memento.isItalicsSelected);
 		underlineCheckBox.setSelected(memento.isUnderlineSelected);
 		isSaved = memento.isSaved;
+		isFrames = memento.isFrames;
 		hasFrames = memento.hasFrames;
 		hasTimes = memento.hasTimes;
+		timeRadioButton.setSelected(!isFrames);
+		framesRadioButton.setSelected(isFrames);
 	}
 	
 	public static class Memento
@@ -1157,11 +1134,12 @@ public class Interface extends javax.swing.JFrame {
 		private boolean isItalicsSelected;
 		private boolean isUnderlineSelected;
 		private boolean isSaved;
+		private boolean isFrames;
 		private boolean hasFrames;
 		private boolean hasTimes;
 		
 		public Memento(int currentSubtitle, String startFieldText, String endFieldText, String durationFieldText, String textAreaText, boolean isBoldSelected, boolean isItalicsSelected,
-				boolean isUnderlineSelected, boolean isSaved, boolean hasFrames, boolean hasTimes)
+				boolean isUnderlineSelected, boolean isSaved, boolean isFrames, boolean hasFrames, boolean hasTimes)
 		{
 			this.currentSubtitle = currentSubtitle;
 			this.startFieldText = startFieldText;
@@ -1172,6 +1150,7 @@ public class Interface extends javax.swing.JFrame {
 			this.isItalicsSelected = isItalicsSelected;
 			this.isUnderlineSelected = isUnderlineSelected;
 			this.isSaved = isSaved;
+			this.isFrames = isFrames;
 			this.hasFrames = hasFrames;
 			this.hasTimes = hasTimes;
 		}

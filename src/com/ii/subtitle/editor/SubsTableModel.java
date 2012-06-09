@@ -116,4 +116,20 @@ public class SubsTableModel extends AbstractTableModel
 			subsList.getSubtitleFromIndex(i).setSubtitleNumber(i + 1);
 		}
 	}
+	
+	public void convertFromFramesToTime(double framesPerSec)
+	{
+		for (int i = 0; i < subsList.getSubtitlesCount(); i++)
+		{
+			subsList.getSubtitleFromIndex(i).framesToTime(framesPerSec);
+		}
+	}
+	
+	public void convertFromTimeToFrames(double framesPerSec)
+	{
+		for (int i = 0; i < subsList.getSubtitlesCount(); i++)
+		{
+			subsList.getSubtitleFromIndex(i).timeToFrames(framesPerSec);
+		}
+	}
 }

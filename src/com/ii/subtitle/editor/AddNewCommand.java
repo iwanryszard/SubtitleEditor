@@ -18,14 +18,27 @@ public class AddNewCommand extends AbstractSubtitlesCommand
 	}
 	
 	@Override
+	protected void executeAfterFireTableDataChanged()
+	{
+		selModel.setSelectionInterval(subtitleIndex, subtitleIndex);
+	}
+	
+	@Override
+	protected void undoAfterFireTableDataChanged()
+	{
+		selModel.setSelectionInterval(firstSelIndex, secondSelIndex);
+	}
+	
+	@Override
 	protected boolean internalExecute()
 	{
 		interf.hasFrames = false;
 		interf.hasTimes = false;
 		
 		model.addNewSubtitle(subtitleIndex);
-
-		selModel.setSelectionInterval(subtitleIndex, subtitleIndex);
+		
+		firstSelIndex = selModel.getAnchorSelectionIndex();
+		secondSelIndex = selModel.getLeadSelectionIndex();
 		
 		Subtitle s = model.getSubtitleList().getSubtitleFromIndex(subtitleIndex);
 
@@ -37,7 +50,6 @@ public class AddNewCommand extends AbstractSubtitlesCommand
 	@Override
 	protected boolean internalUndo()
 	{
-		selModel.setSelectionInterval(firstSelIndex, secondSelIndex);
 		return true;
 	}
 

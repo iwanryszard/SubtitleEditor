@@ -21,13 +21,24 @@ public class MoveDownCommand extends AbstractSubtitlesCommand
 	}
 	
 	@Override
+	protected void executeAfterFireTableDataChanged()
+	{
+		selModel.setSelectionInterval(startSubtitle + 1, startSubtitle + selectedCount);
+	}
+	
+	@Override
+	protected void undoAfterFireTableDataChanged()
+	{
+		selModel.setSelectionInterval(firstSelIndex, secondSelIndex);
+	}
+	
+	@Override
 	protected boolean internalExecute()
 	{
 		model.moveDownByOne(startSubtitle, selectedCount);
 		
 		firstSelIndex = selModel.getAnchorSelectionIndex();
 		secondSelIndex = selModel.getLeadSelectionIndex();
-		selModel.setSelectionInterval(startSubtitle + 1, startSubtitle + selectedCount);
 		
 		return true;
 	}
@@ -35,7 +46,6 @@ public class MoveDownCommand extends AbstractSubtitlesCommand
 	@Override
 	protected boolean internalUndo()
 	{
-		selModel.setSelectionInterval(firstSelIndex, secondSelIndex);
 		return true;
 	}
 }
