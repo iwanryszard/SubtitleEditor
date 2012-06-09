@@ -79,7 +79,24 @@ public class Subtitle {
         this.endFrame = 0;
     }
 
-    public String startTimeToString() {
+    public Subtitle(Subtitle subtitle)
+	{
+    	this.content = subtitle.content;
+        this.bold = subtitle.bold;
+        this.italics = subtitle.italics;
+        this.underline = subtitle.underline;
+        this.subtitleNumber = subtitle.subtitleNumber;
+        this.startHours = subtitle.startHours;
+        this.startMinutes = subtitle.startMinutes;
+        this.startSeconds = subtitle.startSeconds;
+        this.startMiliseconds = subtitle.startMiliseconds;
+        this.endHours = subtitle.endHours;
+        this.endMinutes = subtitle.endMinutes;
+        this.endSeconds = subtitle.endSeconds;
+        this.endMiliseconds = subtitle.endMiliseconds;
+	}
+
+	public String startTimeToString() {
         String hoursString;
         if (startHours / 10 == 0) {
             hoursString = "0" + startHours;

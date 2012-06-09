@@ -11,14 +11,16 @@
 
 package com.ii.subtitle.editor;
 
-import java.io.File;
-import javax.swing.JFileChooser;
-import javax.swing.JButton;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.GroupLayout;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.ArrayList;
+
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.LayoutStyle.ComponentPlacement;
 
 /**
  * 
@@ -116,11 +118,9 @@ public class Interface extends javax.swing.JFrame {
 			}
 		});
 
-		final javax.swing.table.DefaultTableModel model = new javax.swing.table.DefaultTableModel();
+		final SubsTableModel model = new SubsTableModel(new SubtitleList(new ArrayList<Subtitle>()));
 		jTable2.setModel(model);
 		jTable2.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
-		model.setColumnIdentifiers(new String[] { "Number", "Start", "End",
-				"Content" });
 
 		jTable2.getColumnModel().getColumn(0).setPreferredWidth(50);
 		jTable2.getColumnModel().getColumn(1).setPreferredWidth(100);
@@ -138,7 +138,7 @@ public class Interface extends javax.swing.JFrame {
 		newSubBeforeButton
 				.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						currentSubtitle = jTable2.getSelectedRow();
+						/*currentSubtitle = jTable2.getSelectedRow();
 						if (currentSubtitle == -1) {
 							currentSubtitle = 0;
 						}
@@ -184,7 +184,7 @@ public class Interface extends javax.swing.JFrame {
 						italicsCheckBox.setSelected(in.subList
 								.get(currentSubtitle).italics);
 						underlineCheckBox.setSelected(in.subList
-								.get(currentSubtitle).underline);
+								.get(currentSubtitle).underline);*/
 					}
 				});
 
@@ -192,7 +192,7 @@ public class Interface extends javax.swing.JFrame {
 		newSubAfterButton
 				.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						currentSubtitle = jTable2.getSelectedRow()
+						/*currentSubtitle = jTable2.getSelectedRow()
 								+ jTable2.getSelectedRowCount() - 1;
 						if (currentSubtitle == -2) {
 							currentSubtitle = jTable2.getRowCount() - 1;
@@ -243,7 +243,7 @@ public class Interface extends javax.swing.JFrame {
 						italicsCheckBox.setSelected(in.subList
 								.get(currentSubtitle + 1).italics);
 						underlineCheckBox.setSelected(in.subList
-								.get(currentSubtitle + 1).underline);
+								.get(currentSubtitle + 1).underline);*/
 					}
 				});
 
@@ -254,23 +254,12 @@ public class Interface extends javax.swing.JFrame {
 				if (currentSubtitle >= 0) {
 					isSaved = false;
 					int length = jTable2.getSelectedRowCount();
-					for (int i = currentSubtitle + length - 1; i >= currentSubtitle; i--) {
-						model.removeRow(i);
-					}
-					for (int i = currentSubtitle + length - 1; i >= currentSubtitle; i--) {
-						in.subList.remove(i);
-					}
-					for (int i = currentSubtitle
-							+ jTable2.getSelectedRowCount(); i < in.subList
-							.size(); i++) {
-						in.subList.get(i).setSubtitleNumber(i + 1);
-					}
-					for (int i = currentSubtitle
-							+ jTable2.getSelectedRowCount(); i < jTable2
-							.getRowCount(); i++) {
-						jTable2.getModel().setValueAt(
-								in.subList.get(i).subtitleNumber, i, 0);
-					}
+					
+					DeleteCommand delete = new DeleteCommand(Interface.this, (SubsTableModel)jTable2.getModel(), 
+							currentSubtitle, length);
+					CommandController controller = CommandController.getCommandController();
+					controller.executeCommand(delete);
+					
 					startField.setText("");
 					endField.setText("");
 					durationField.setText("");
@@ -285,7 +274,7 @@ public class Interface extends javax.swing.JFrame {
 		moveUpButton.setText("Move Up");
 		moveUpButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				currentSubtitle = jTable2.getSelectedRow();
+				/*currentSubtitle = jTable2.getSelectedRow();
 				if (currentSubtitle > 0) {
 					isSaved = false;
 					int length = jTable2.getSelectedRowCount();
@@ -316,14 +305,14 @@ public class Interface extends javax.swing.JFrame {
 					}
 					jTable2.getSelectionModel().setSelectionInterval(
 							currentSubtitle - 1, currentSubtitle + length - 2);
-				}
+				}*/
 			}
 		});
 
 		moveDownButton.setText("Move Down");
 		moveDownButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				currentSubtitle = jTable2.getSelectedRow();
+				/*currentSubtitle = jTable2.getSelectedRow();
 				int length = jTable2.getSelectedRowCount();
 				if (currentSubtitle >= 0
 						&& currentSubtitle + length < jTable2.getRowCount()) {
@@ -355,7 +344,7 @@ public class Interface extends javax.swing.JFrame {
 					}
 					jTable2.getSelectionModel().setSelectionInterval(
 							currentSubtitle + 1, currentSubtitle + length);
-				}
+				}*/
 			}
 		});
 
@@ -385,24 +374,24 @@ public class Interface extends javax.swing.JFrame {
 					currentFile = fileChooser.getSelectedFile();
 					hasPath = true;
 					setTitle("Subtitle Editor: " + currentFile.getName());
-					for (int i = model.getRowCount() - 1; i >= 0; i--) {
-						model.removeRow(i);
-					}
+					
 					in.subList.clear();
 					fillList();
-					if (currentFile.getPath().endsWith(".srt")) {
-						for (Subtitle s : in.subList) {
-							model.addRow(new Object[] { s.subtitleNumber,
-									s.startTimeToString(), s.endTimeToString(),
-									s.content });
-						}
-					}
-					if (currentFile.getPath().endsWith(".sub")) {
-						for (Subtitle s : in.subList) {
-							model.addRow(new Object[] { s.subtitleNumber,
-									s.startFrame, s.endFrame, s.content });
-						}
-					}
+					
+					((SubsTableModel)jTable2.getModel()).setSubtitleList(new SubtitleList(in.subList));
+//					if (currentFile.getPath().endsWith(".srt")) {
+//						for (Subtitle s : in.subList) {
+//							model.addRow(new Object[] { s.subtitleNumber,
+//									s.startTimeToString(), s.endTimeToString(),
+//									s.content });
+//						}
+//					}
+//					if (currentFile.getPath().endsWith(".sub")) {
+//						for (Subtitle s : in.subList) {
+//							model.addRow(new Object[] { s.subtitleNumber,
+//									s.startFrame, s.endFrame, s.content });
+//						}
+//					}
 				}
 			}
 		});
@@ -1218,58 +1207,6 @@ public class Interface extends javax.swing.JFrame {
 	boolean hasTimes = false;
 	boolean hasPath = false;
 	boolean isSaved = false;
-
-	public boolean isSaved() {
-		return isSaved;
-	}
-
-	public void setSaved(boolean isSaved) {
-		this.isSaved = isSaved;
-	}
-
-	public javax.swing.JTextArea getTextArea() {
-		return TextArea;
-	}
-
-	public javax.swing.JCheckBox getBoldCheckBox() {
-		return boldCheckBox;
-	}
-
-	public javax.swing.JCheckBox getItalicsCheckBox() {
-		return italicsCheckBox;
-	}
-
-	public javax.swing.JTable getjTable2() {
-		return jTable2;
-	}
-
-	public javax.swing.JTextField getStartField() {
-		return startField;
-	}
-
-	public javax.swing.JTextField getEndField() {
-		return endField;
-	}
-
-	public javax.swing.JTextField getDurationField() {
-		return durationField;
-	}
-
-	public javax.swing.JCheckBox getUnderlineCheckBox() {
-		return underlineCheckBox;
-	}
-
-	public Input getIn() {
-		return in;
-	}
-
-	public int getCurrentSubtitle() {
-		return currentSubtitle;
-	}
-	
-	public void setCurrentSubtitle(int currentSubtitle) {
-		this.currentSubtitle = currentSubtitle;
-	}
 	
 	public void fillList() {
 		if (currentFile.getPath().endsWith(".srt")) {
@@ -1307,5 +1244,52 @@ public class Interface extends javax.swing.JFrame {
 				FPSComboBox.setSelectedIndex(7);
 		}
 		isSaved = true;
+	}
+	
+	public Memento saveToMemento()
+	{
+		return new Memento(currentSubtitle, startField.getText(), endField.getText(), durationField.getText(),
+				TextArea.getText(), boldCheckBox.isSelected(), italicsCheckBox.isSelected(), underlineCheckBox.isSelected(), 
+				isSaved);
+	}
+	
+	public void restoreFromMemento(Memento memento)
+	{
+		currentSubtitle = memento.currentSubtitle;
+		startField.setText(memento.startFieldText);
+		endField.setText(memento.endFieldText);
+		durationField.setText(memento.durationFieldText);
+		TextArea.setText(memento.textAreaText);
+		boldCheckBox.setSelected(memento.isBoldSelected);
+		italicsCheckBox.setSelected(memento.isItalicsSelected);
+		underlineCheckBox.setSelected(memento.isUnderlineSelected);
+		isSaved = memento.isSaved;
+	}
+	
+	public static class Memento
+	{
+		private int currentSubtitle;
+		private String startFieldText;
+		private String endFieldText;
+		private String durationFieldText;
+		private String textAreaText;
+		private boolean isBoldSelected;
+		private boolean isItalicsSelected;
+		private boolean isUnderlineSelected;
+		private boolean isSaved;
+		
+		public Memento(int currentSubtitle, String startFieldText, String endFieldText, String durationFieldText, String textAreaText, boolean isBoldSelected, boolean isItalicsSelected,
+				boolean isUnderlineSelected, boolean isSaved)
+		{
+			this.currentSubtitle = currentSubtitle;
+			this.startFieldText = startFieldText;
+			this.endFieldText = endFieldText;
+			this.durationFieldText = durationFieldText;
+			this.textAreaText = textAreaText;
+			this.isBoldSelected = isBoldSelected;
+			this.isItalicsSelected = isItalicsSelected;
+			this.isUnderlineSelected = isUnderlineSelected;
+			this.isSaved = isSaved;
+		}
 	}
 }
