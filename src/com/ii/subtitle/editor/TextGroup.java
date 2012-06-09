@@ -6,7 +6,7 @@ public class TextGroup extends SubtitleText
 {
 	private final ArrayList<SubtitleText> children;
 
-	public TextGroup(SubtitleText parent, Type function)
+	public TextGroup(Type function)
 	{
 		super(function);
 		this.children = new ArrayList<>();
