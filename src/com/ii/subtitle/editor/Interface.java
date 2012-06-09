@@ -138,53 +138,15 @@ public class Interface extends javax.swing.JFrame {
 		newSubBeforeButton
 				.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						/*currentSubtitle = jTable2.getSelectedRow();
+						currentSubtitle = jTable2.getSelectedRow();
 						if (currentSubtitle == -1) {
 							currentSubtitle = 0;
 						}
-						Subtitle s = new Subtitle();
-						in.subList.add(currentSubtitle, s);
-						hasFrames = false;
-						hasTimes = false;
-						isSaved = false;
-						if (isFrames) {
-							model.insertRow(currentSubtitle, new Object[] {
-									s.subtitleNumber, s.startFrame, s.endFrame,
-									s.content });
-							startField.setText(in.subList.get(currentSubtitle)
-									.startFrameToString());
-							endField.setText(in.subList.get(currentSubtitle)
-									.endFrameToString());
-							durationField.setText(in.subList.get(
-									currentSubtitle).durationFramesToString());
-						} else {
-							model.insertRow(
-									currentSubtitle,
-									new Object[] { s.subtitleNumber,
-											s.startTimeToString(),
-											s.endTimeToString(), s.content });
-							startField.setText(in.subList.get(currentSubtitle)
-									.startTimeToString());
-							endField.setText(in.subList.get(currentSubtitle)
-									.endTimeToString());
-							durationField.setText(in.subList.get(
-									currentSubtitle).durationTimeToString());
-						}
-						for (int i = currentSubtitle; i < in.subList.size(); i++) {
-							in.subList.get(i).setSubtitleNumber(i + 1);
-						}
-						for (int i = currentSubtitle; i < jTable2.getRowCount(); i++) {
-							jTable2.getModel().setValueAt(i + 1, i, 0);
-						}
-						jTable2.getSelectionModel().setSelectionInterval(
-								currentSubtitle, currentSubtitle);
-						TextArea.setText(in.subList.get(currentSubtitle).content);
-						boldCheckBox.setSelected(in.subList
-								.get(currentSubtitle).bold);
-						italicsCheckBox.setSelected(in.subList
-								.get(currentSubtitle).italics);
-						underlineCheckBox.setSelected(in.subList
-								.get(currentSubtitle).underline);*/
+						
+						AddNewCommand addNew = new AddNewCommand(Interface.this, (SubsTableModel)jTable2.getModel(), 
+							currentSubtitle, jTable2.getSelectionModel());
+						CommandController controller = CommandController.getCommandController();
+						controller.executeCommand(addNew);
 					}
 				});
 
@@ -192,58 +154,16 @@ public class Interface extends javax.swing.JFrame {
 		newSubAfterButton
 				.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						/*currentSubtitle = jTable2.getSelectedRow()
+						currentSubtitle = jTable2.getSelectedRow()
 								+ jTable2.getSelectedRowCount() - 1;
 						if (currentSubtitle == -2) {
 							currentSubtitle = jTable2.getRowCount() - 1;
 						}
-						Subtitle s = new Subtitle();
-						in.subList.add(currentSubtitle + 1, s);
-						hasFrames = false;
-						hasTimes = false;
-						isSaved = false;
-						if (isFrames) {
-							model.insertRow(currentSubtitle + 1, new Object[] {
-									s.subtitleNumber, s.startFrame, s.endFrame,
-									s.content });
-							startField.setText(in.subList.get(
-									currentSubtitle + 1).startFrameToString());
-							endField.setText(in.subList
-									.get(currentSubtitle + 1)
-									.endFrameToString());
-							durationField.setText(in.subList.get(
-									currentSubtitle + 1)
-									.durationFramesToString());
-						} else {
-							model.insertRow(
-									currentSubtitle + 1,
-									new Object[] { s.subtitleNumber,
-											s.startTimeToString(),
-											s.endTimeToString(), s.content });
-							startField.setText(in.subList.get(
-									currentSubtitle + 1).startTimeToString());
-							endField.setText(in.subList
-									.get(currentSubtitle + 1).endTimeToString());
-							durationField
-									.setText(in.subList
-											.get(currentSubtitle + 1)
-											.durationTimeToString());
-						}
-						for (int i = currentSubtitle; i < in.subList.size(); i++) {
-							in.subList.get(i).setSubtitleNumber(i + 1);
-						}
-						for (int i = currentSubtitle; i < jTable2.getRowCount(); i++) {
-							jTable2.getModel().setValueAt(i + 1, i, 0);
-						}
-						jTable2.getSelectionModel().setSelectionInterval(
-								currentSubtitle + 1, currentSubtitle + 1);
-						TextArea.setText(in.subList.get(currentSubtitle + 1).content);
-						boldCheckBox.setSelected(in.subList
-								.get(currentSubtitle + 1).bold);
-						italicsCheckBox.setSelected(in.subList
-								.get(currentSubtitle + 1).italics);
-						underlineCheckBox.setSelected(in.subList
-								.get(currentSubtitle + 1).underline);*/
+						
+						AddNewCommand addNew = new AddNewCommand(Interface.this, (SubsTableModel)jTable2.getModel(), 
+							currentSubtitle + 1, jTable2.getSelectionModel());
+						CommandController controller = CommandController.getCommandController();
+						controller.executeCommand(addNew);
 					}
 				});
 
@@ -252,21 +172,12 @@ public class Interface extends javax.swing.JFrame {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				currentSubtitle = jTable2.getSelectedRow();
 				if (currentSubtitle >= 0) {
-					isSaved = false;
 					int length = jTable2.getSelectedRowCount();
 					
 					DeleteCommand delete = new DeleteCommand(Interface.this, (SubsTableModel)jTable2.getModel(), 
 							currentSubtitle, length);
 					CommandController controller = CommandController.getCommandController();
 					controller.executeCommand(delete);
-					
-					startField.setText("");
-					endField.setText("");
-					durationField.setText("");
-					TextArea.setText("");
-					boldCheckBox.setSelected(false);
-					italicsCheckBox.setSelected(false);
-					underlineCheckBox.setSelected(false);
 				}
 			}
 		});
@@ -274,77 +185,32 @@ public class Interface extends javax.swing.JFrame {
 		moveUpButton.setText("Move Up");
 		moveUpButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				/*currentSubtitle = jTable2.getSelectedRow();
+				currentSubtitle = jTable2.getSelectedRow();
 				if (currentSubtitle > 0) {
-					isSaved = false;
+
 					int length = jTable2.getSelectedRowCount();
-					Subtitle s = new Subtitle();
-					s = in.subList.get(currentSubtitle - 1);
-					model.removeRow(currentSubtitle - 1);
-					in.subList.remove(currentSubtitle - 1);
-					if (isFrames) {
-						model.insertRow(currentSubtitle + length - 1,
-								new Object[] { s.subtitleNumber, s.startFrame,
-										s.endFrame, s.content });
-					} else {
-						model.insertRow(
-								currentSubtitle + length - 1,
-								new Object[] { s.subtitleNumber,
-										s.startTimeToString(),
-										s.endTimeToString(), s.content });
-					}
-					in.subList.add(currentSubtitle + length - 1, s);
-					for (int i = currentSubtitle - 1; i < currentSubtitle
-							+ length; i++) {
-						in.subList.get(i).setSubtitleNumber(i + 1);
-					}
-					for (int i = currentSubtitle - 1; i < currentSubtitle
-							+ length; i++) {
-						jTable2.getModel().setValueAt(
-								in.subList.get(i).subtitleNumber, i, 0);
-					}
-					jTable2.getSelectionModel().setSelectionInterval(
-							currentSubtitle - 1, currentSubtitle + length - 2);
-				}*/
+					
+					MoveUpCommand moveUp = new MoveUpCommand(Interface.this, (SubsTableModel)jTable2.getModel(), 
+							currentSubtitle, length, jTable2.getSelectionModel());
+					CommandController controller = CommandController.getCommandController();
+					controller.executeCommand(moveUp);
+				}
 			}
 		});
 
 		moveDownButton.setText("Move Down");
 		moveDownButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				/*currentSubtitle = jTable2.getSelectedRow();
+				currentSubtitle = jTable2.getSelectedRow();
 				int length = jTable2.getSelectedRowCount();
 				if (currentSubtitle >= 0
 						&& currentSubtitle + length < jTable2.getRowCount()) {
-					Subtitle s = new Subtitle();
-					isSaved = false;
-					s = in.subList.get(currentSubtitle + length);
-					model.removeRow(currentSubtitle + length);
-					in.subList.remove(currentSubtitle + length);
-					if (isFrames) {
-						model.insertRow(currentSubtitle, new Object[] {
-								s.subtitleNumber, s.startFrame, s.endFrame,
-								s.content });
-					} else {
-						model.insertRow(
-								currentSubtitle,
-								new Object[] { s.subtitleNumber,
-										s.startTimeToString(),
-										s.endTimeToString(), s.content });
-					}
-					in.subList.add(currentSubtitle, s);
-					for (int i = currentSubtitle; i < currentSubtitle + length
-							+ 1; i++) {
-						in.subList.get(i).setSubtitleNumber(i + 1);
-					}
-					for (int i = currentSubtitle - 1; i < currentSubtitle
-							+ length + 1; i++) {
-						jTable2.getModel().setValueAt(
-								in.subList.get(i).subtitleNumber, i, 0);
-					}
-					jTable2.getSelectionModel().setSelectionInterval(
-							currentSubtitle + 1, currentSubtitle + length);
-				}*/
+					
+					MoveDownCommand moveDown = new MoveDownCommand(Interface.this, (SubsTableModel)jTable2.getModel(), 
+							currentSubtitle, length, jTable2.getSelectionModel());
+					CommandController controller = CommandController.getCommandController();
+					controller.executeCommand(moveDown);
+				}
 			}
 		});
 
@@ -379,6 +245,7 @@ public class Interface extends javax.swing.JFrame {
 					fillList();
 					
 					((SubsTableModel)jTable2.getModel()).setSubtitleList(new SubtitleList(in.subList));
+					CommandController.getCommandController().clearCommandHistory();
 //					if (currentFile.getPath().endsWith(".srt")) {
 //						for (Subtitle s : in.subList) {
 //							model.addRow(new Object[] { s.subtitleNumber,
@@ -784,28 +651,11 @@ public class Interface extends javax.swing.JFrame {
 		timeRadioButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				if (isFrames) {
-					isFrames = false;
-					framesRadioButton.setSelected(false);
-					timeRadioButton.setSelected(true);
-					hasTimes = true;
-					isSaved = false;
-					for (Subtitle s : in.subList) {
-						s.framesToTime(in.framesPerSecond);
-					}
-					for (int i = 0; i < in.subList.size(); i++) {
-						jTable2.getModel().setValueAt(
-								in.subList.get(i).startTimeToString(), i, 1);
-						jTable2.getModel().setValueAt(
-								in.subList.get(i).endTimeToString(), i, 2);
-					}
-					if (currentSubtitle >= 0) {
-						startField.setText(in.subList.get(currentSubtitle)
-								.startTimeToString());
-						endField.setText(in.subList.get(currentSubtitle)
-								.endTimeToString());
-						durationField.setText(in.subList.get(currentSubtitle)
-								.durationTimeToString());
-					}
+					
+					SwitchToTimeCommand switchToTime = new SwitchToTimeCommand(Interface.this, (SubsTableModel)jTable2.getModel(), 
+							currentSubtitle, in.framesPerSecond);
+					CommandController controller = CommandController.getCommandController();
+					controller.executeCommand(switchToTime);
 				}
 			}
 		});
@@ -815,30 +665,11 @@ public class Interface extends javax.swing.JFrame {
 				.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent evt) {
 						if (!isFrames) {
-							isFrames = true;
-							timeRadioButton.setSelected(false);
-							framesRadioButton.setSelected(true);
-							hasFrames = true;
-							isSaved = false;
-							for (Subtitle s : in.subList) {
-								s.timeToFrames(in.framesPerSecond);
-							}
-							for (int i = 0; i < in.subList.size(); i++) {
-								jTable2.getModel().setValueAt(
-										in.subList.get(i).startFrame, i, 1);
-								jTable2.getModel().setValueAt(
-										in.subList.get(i).endFrame, i, 2);
-							}
-							if (currentSubtitle >= 0) {
-								startField.setText(in.subList.get(
-										currentSubtitle).startFrameToString());
-								endField.setText(in.subList
-										.get(currentSubtitle)
-										.endFrameToString());
-								durationField.setText(in.subList.get(
-										currentSubtitle)
-										.durationFramesToString());
-							}
+							
+							SwitchToFramesCommand switchToFrames = new SwitchToFramesCommand(Interface.this, (SubsTableModel)jTable2.getModel(), 
+									currentSubtitle, in.framesPerSecond);
+							CommandController controller = CommandController.getCommandController();
+							controller.executeCommand(switchToFrames);
 						}
 					}
 				});
@@ -852,6 +683,7 @@ public class Interface extends javax.swing.JFrame {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				if (in.subList.size() > 0) {
 					saveAs();
+					CommandController.getCommandController().clearCommandHistory();
 				}
 			}
 		});
@@ -937,6 +769,7 @@ public class Interface extends javax.swing.JFrame {
 		});
 		
 		JButton btnUndo = new JButton("Undo");
+		CommandController.getCommandController().registerUndoButton(btnUndo);
 		btnUndo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
@@ -946,6 +779,7 @@ public class Interface extends javax.swing.JFrame {
 		});
 		
 		JButton btnRedo = new JButton("Redo");
+		CommandController.getCommandController().registerRedoButton(btnRedo);
 		btnRedo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
@@ -1246,11 +1080,29 @@ public class Interface extends javax.swing.JFrame {
 		isSaved = true;
 	}
 	
+	public void manipulateEditPanelValues(String startFieldText, String endFieldText, String durationFieldText, 
+			String textAreaText, boolean isBoldSelected, boolean isItalicsSelected, boolean isUnderlineSelected)
+	{
+		startField.setText(startFieldText);
+		endField.setText(endFieldText);
+		durationField.setText(durationFieldText);
+		TextArea.setText(textAreaText);
+		boldCheckBox.setSelected(isBoldSelected);
+		italicsCheckBox.setSelected(isItalicsSelected);
+		underlineCheckBox.setSelected(isUnderlineSelected);
+	}
+	
+	public void manipulateRadioButtonsValues(boolean isTimeSelected, boolean isFramesSelected)
+	{
+		timeRadioButton.setSelected(isTimeSelected);
+		framesRadioButton.setSelected(isFramesSelected);
+	}
+	
 	public Memento saveToMemento()
 	{
 		return new Memento(currentSubtitle, startField.getText(), endField.getText(), durationField.getText(),
 				TextArea.getText(), boldCheckBox.isSelected(), italicsCheckBox.isSelected(), underlineCheckBox.isSelected(), 
-				isSaved);
+				isSaved, isFrames, hasFrames, hasTimes);
 	}
 	
 	public void restoreFromMemento(Memento memento)
@@ -1264,6 +1116,11 @@ public class Interface extends javax.swing.JFrame {
 		italicsCheckBox.setSelected(memento.isItalicsSelected);
 		underlineCheckBox.setSelected(memento.isUnderlineSelected);
 		isSaved = memento.isSaved;
+		isFrames = memento.isFrames;
+		hasFrames = memento.hasFrames;
+		hasTimes = memento.hasTimes;
+		timeRadioButton.setSelected(!isFrames);
+		framesRadioButton.setSelected(isFrames);
 	}
 	
 	public static class Memento
@@ -1277,9 +1134,12 @@ public class Interface extends javax.swing.JFrame {
 		private boolean isItalicsSelected;
 		private boolean isUnderlineSelected;
 		private boolean isSaved;
+		private boolean isFrames;
+		private boolean hasFrames;
+		private boolean hasTimes;
 		
 		public Memento(int currentSubtitle, String startFieldText, String endFieldText, String durationFieldText, String textAreaText, boolean isBoldSelected, boolean isItalicsSelected,
-				boolean isUnderlineSelected, boolean isSaved)
+				boolean isUnderlineSelected, boolean isSaved, boolean isFrames, boolean hasFrames, boolean hasTimes)
 		{
 			this.currentSubtitle = currentSubtitle;
 			this.startFieldText = startFieldText;
@@ -1290,6 +1150,9 @@ public class Interface extends javax.swing.JFrame {
 			this.isItalicsSelected = isItalicsSelected;
 			this.isUnderlineSelected = isUnderlineSelected;
 			this.isSaved = isSaved;
+			this.isFrames = isFrames;
+			this.hasFrames = hasFrames;
+			this.hasTimes = hasTimes;
 		}
 	}
 }

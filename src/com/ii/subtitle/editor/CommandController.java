@@ -2,12 +2,17 @@ package com.ii.subtitle.editor;
 
 import java.util.Stack;
 
+import javax.swing.JButton;
+
 public class CommandController 
 {
 	private static CommandController controller;
 	
 	private Stack<BaseCommand> undoStack;
 	private Stack<BaseCommand> redoStack;
+	
+	private JButton undoButton;
+	private JButton redoButton;
 	
 	private CommandController()
 	{
@@ -32,6 +37,9 @@ public class CommandController
 		{
 			undoStack.push(command);
 			redoStack.clear();
+			
+			undoButton.setEnabled(true);
+			redoButton.setEnabled(false);
 		}
 	}
 	
@@ -45,6 +53,12 @@ public class CommandController
 			if(success)
 			{
 				redoStack.push(command);
+				
+				redoButton.setEnabled(true);
+				if(undoStack.empty())
+				{
+					undoButton.setEnabled(false);
+				}
 			}
 		}
 	}
@@ -59,7 +73,32 @@ public class CommandController
 			if(success)
 			{
 				undoStack.push(command);
+				
+				undoButton.setEnabled(true);
+				if(redoStack.empty())
+				{
+					redoButton.setEnabled(false);
+				}
 			}
 		}
+	}
+	
+	public void clearCommandHistory()
+	{
+		undoStack.clear();
+		redoStack.clear();
+		
+		undoButton.setEnabled(false);
+		redoButton.setEnabled(false);
+	}
+	
+	public void registerUndoButton(JButton undoButton)
+	{
+		this.undoButton = undoButton;
+	}
+	
+	public void registerRedoButton(JButton redoButton)
+	{
+		this.redoButton = redoButton;
 	}
 }

@@ -17,15 +17,28 @@ public abstract class AbstractSubtitlesCommand extends BaseCommand
 	
 	protected abstract boolean internalUndo();
 	
+	protected void executeAfterFireTableDataChanged()
+	{
+		
+	}
+	
+	protected void undoAfterFireTableDataChanged()
+	{
+		
+	}
+	
 	@Override
 	public boolean execute()
 	{
 		memento = interf.saveToMemento();
 		subsListCopy = new SubtitleList(model.getSubtitleList());
 		
-		boolean result = internalExecute();
+		interf.isSaved = false;
 		
+		boolean result = internalExecute();
 		model.fireTableDataChanged();
+		
+		executeAfterFireTableDataChanged();
 		
 		return result;
 	}
@@ -38,6 +51,8 @@ public abstract class AbstractSubtitlesCommand extends BaseCommand
 		interf.restoreFromMemento(memento);
 		model.setSubtitleList(subsListCopy);
 		model.fireTableDataChanged();
+		
+		undoAfterFireTableDataChanged();
 		
 		return result;
 	}
