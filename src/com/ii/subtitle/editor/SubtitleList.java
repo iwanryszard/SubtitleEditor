@@ -32,6 +32,11 @@ public class SubtitleList
 		subtitles.remove(index);
 	}
 	
+	public void insertSubtitleAtIndex(int index, Subtitle sub)
+	{
+		subtitles.add(index, sub);
+	}
+	
 	public int getSubtitlesCount()
 	{
 		return subtitles.size();

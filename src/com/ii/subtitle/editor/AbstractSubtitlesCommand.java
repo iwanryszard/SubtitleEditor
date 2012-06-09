@@ -23,8 +23,9 @@ public abstract class AbstractSubtitlesCommand extends BaseCommand
 		memento = interf.saveToMemento();
 		subsListCopy = new SubtitleList(model.getSubtitleList());
 		
-		boolean result = internalExecute();
+		interf.isSaved = false;
 		
+		boolean result = internalExecute();
 		model.fireTableDataChanged();
 		
 		return result;

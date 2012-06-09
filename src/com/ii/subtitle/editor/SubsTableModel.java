@@ -79,4 +79,41 @@ public class SubsTableModel extends AbstractTableModel
 			subsList.getSubtitleFromIndex(i).setSubtitleNumber(i + 1);
 		}
 	}
+	
+	public void moveUpByOne(int startSubtitle, int selectedCount)
+	{
+		Subtitle s = subsList.getSubtitleFromIndex(startSubtitle - 1);
+
+		subsList.removeSubtitleFromIndex(startSubtitle - 1);
+
+		subsList.insertSubtitleAtIndex(startSubtitle + selectedCount - 1, s);
+		for (int i = startSubtitle - 1; i < startSubtitle + selectedCount; i++)
+		{
+			subsList.getSubtitleFromIndex(i).setSubtitleNumber(i + 1);
+		}
+	}
+	
+	public void moveDownByOne(int startSubtitle, int selectedCount)
+	{
+		Subtitle s = subsList.getSubtitleFromIndex(startSubtitle + selectedCount);
+
+		subsList.removeSubtitleFromIndex(startSubtitle + selectedCount);
+
+		subsList.insertSubtitleAtIndex(startSubtitle, s);
+		for (int i = startSubtitle; i < startSubtitle + selectedCount + 1; i++)
+		{
+			subsList.getSubtitleFromIndex(i).setSubtitleNumber(i + 1);
+		}
+	}
+	
+	public void addNewSubtitle(int index)
+	{
+		Subtitle s = new Subtitle();
+		subsList.insertSubtitleAtIndex(index, s);
+
+		for (int i = index; i < subsList.getSubtitlesCount(); i++)
+		{
+			subsList.getSubtitleFromIndex(i).setSubtitleNumber(i + 1);
+		}
+	}
 }
