@@ -4,29 +4,28 @@ public class SwitchToFramesCommand extends AbstractSubtitlesCommand
 {
 	private int subtitleIndex;
 	private double framesPerSec;
-	
-	public SwitchToFramesCommand(Interface interf, SubsTableModel model, int subtitleIndex, double framesPerSec)
+
+	public SwitchToFramesCommand(Interface interf, Subtitles subtitles, int subtitleIndex, double framesPerSec)
 	{
-		super(interf, model);
-		
+		super(interf, subtitles);
+
 		this.subtitleIndex = subtitleIndex;
 		this.framesPerSec = framesPerSec;
 	}
-	
+
 	@Override
 	protected boolean internalExecute()
 	{
 		interf.isFrames = true;
-		interf.hasFrames = true;
-		
-		model.convertFromTimeToFrames(framesPerSec);
-		
+
+		subtitles.setFrameRatePerSecond(framesPerSec);
+		subtitles.switchToFrames();
+
 		interf.manipulateRadioButtonsValues(false, true);
-		if(subtitleIndex >= 0)
+		if (subtitleIndex >= 0 && subtitleIndex < subtitles.getCount())
 		{
-			Subtitle s = model.getSubtitleList().getSubtitleFromIndex(subtitleIndex);
-			interf.manipulateEditPanelValues(s.startTimeToString(), s.endTimeToString(), s.durationTimeToString(), s.content, 
-					s.bold, s.italics, s.underline);
+			interf.manipulateEditPanelValues(subtitles.getStart(subtitleIndex), subtitles.getEnd(subtitleIndex),
+					subtitles.getDuration(subtitleIndex), subtitles.getSubtitleHTMLFormattedText(subtitleIndex, false));
 		}
 		return true;
 	}

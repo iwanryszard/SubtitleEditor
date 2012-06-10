@@ -6,9 +6,9 @@ public class DeleteCommand extends AbstractSubtitlesCommand
 	private int startSubtitle;
 	private int selectedCount;
 	
-	public DeleteCommand(Interface interf, SubsTableModel model, int startSubtitle, int selectedCount)
+	public DeleteCommand(Interface interf, Subtitles subtitles, int startSubtitle, int selectedCount)
 	{
-		super(interf, model);
+		super(interf, subtitles);
 		
 		this.startSubtitle = startSubtitle;
 		this.selectedCount = selectedCount;
@@ -17,8 +17,8 @@ public class DeleteCommand extends AbstractSubtitlesCommand
 	@Override
 	protected boolean internalExecute()
 	{
-		model.removeSubtitles(startSubtitle, selectedCount);
-		interf.manipulateEditPanelValues("", "", "", "", false, false, false);
+		subtitles.removeInRange(startSubtitle, selectedCount);
+		interf.manipulateEditPanelValues("", "", "", "");
 		return true;
 	}
 

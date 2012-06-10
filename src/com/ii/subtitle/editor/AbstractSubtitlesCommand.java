@@ -2,15 +2,15 @@ package com.ii.subtitle.editor;
 
 public abstract class AbstractSubtitlesCommand extends BaseCommand
 {
-	protected SubsTableModel model;
-	protected SubtitleList subsListCopy;
+	protected Subtitles subtitles;
+	protected Subtitles.SavedState subsSavedState;
 	protected Interface interf;
 	protected Interface.Memento memento;
 	
-	public AbstractSubtitlesCommand(Interface interf, SubsTableModel model)
+	public AbstractSubtitlesCommand(Interface interf, Subtitles subtitles)
 	{
 		this.interf = interf;
-		this.model = model;
+		this.subtitles = subtitles;
 	}
 	
 	protected abstract boolean internalExecute();
@@ -31,12 +31,11 @@ public abstract class AbstractSubtitlesCommand extends BaseCommand
 	public boolean execute()
 	{
 		memento = interf.saveToMemento();
-		subsListCopy = new SubtitleList(model.getSubtitleList());
-		
+		subsSavedState = subtitles.createSavedState();
 		interf.isSaved = false;
 		
 		boolean result = internalExecute();
-		model.fireTableDataChanged();
+		interf.notifyJtableDataChanged();
 		
 		executeAfterFireTableDataChanged();
 		
@@ -49,8 +48,8 @@ public abstract class AbstractSubtitlesCommand extends BaseCommand
 		boolean result = internalUndo();
 		
 		interf.restoreFromMemento(memento);
-		model.setSubtitleList(subsListCopy);
-		model.fireTableDataChanged();
+		subtitles.restoreToState(subsSavedState);
+		interf.notifyJtableDataChanged();
 		
 		undoAfterFireTableDataChanged();
 		

@@ -1,20 +1,38 @@
 package com.ii.subtitle.editor;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 
 public class SrtWriter extends AbstractSubtitlesWriter
 {
 
+	public static String getSrtStringDuration(int duration)
+	{
+		int milliseconds = duration % 1000;
+		duration /= 1000;
+		int seconds = duration % 60;
+		duration /= 60;
+		int minutes = duration % 60;
+		duration /= 60;
+		int hours = duration;
+		return String.format("%02d:%02d:%02d,%03d", hours, minutes, seconds, milliseconds);
+	}
+
 	public SrtWriter(OutputStream stream)
 	{
 		super(stream);
+	}
+	
+	public SrtWriter(File file)
+	{
+		super(file);
 	}
 
 	@Override
 	public void onSubtitleStarted(int index) throws IOException
 	{
-		writer.write(String.valueOf(index));
+		writer.write(String.valueOf(index + 1));
 		writer.newLine();
 
 	}
@@ -32,18 +50,6 @@ public class SrtWriter extends AbstractSubtitlesWriter
 		writer.write(" --> ");
 		String value = getSrtStringDuration(duration);
 		writer.write(value);
-	}
-
-	private String getSrtStringDuration(int duration) throws IOException
-	{
-		int milliseconds = duration % 1000;
-		duration %= 1000;
-		int seconds = duration % 60;
-		duration %= 60;
-		int minutes = duration % 60;
-		duration %= 60;
-		int hours = duration;
-		return String.format("%02d:%02d:%02d:%03d", hours, minutes, seconds, milliseconds);
 	}
 
 	@Override
@@ -97,13 +103,13 @@ public class SrtWriter extends AbstractSubtitlesWriter
 	@Override
 	public void onTypefaceBegin(String typeFaceName) throws IOException
 	{
-		//do nothing
+		// do nothing
 	}
 
 	@Override
 	public void onTypefaceEnd(String typeFaceName) throws IOException
 	{
-		//do nothing
+		// do nothing
 	}
 
 	@Override

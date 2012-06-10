@@ -15,7 +15,7 @@ public class SubtitleParserFactory
 			throw new IllegalStateException("Input stream cannot be null!");
 		}
 		String content = readContent(stream);
-		SubtitlesType type = getSubtitlesType(content);
+		SubtitlesType type = getSubtitlesType(content, extension);
 
 		switch (type)
 		{
@@ -31,10 +31,18 @@ public class SubtitleParserFactory
 
 	}
 
-	private static SubtitlesType getSubtitlesType(String content)
+	private static SubtitlesType getSubtitlesType(String content, String extension)
 	{
-
-		// TODO implementation
+		
+		// TODO use regular expressions to check if there is occurrence of supported types
+		if(extension.equalsIgnoreCase("srt"))
+		{
+			return SubtitlesType.SRT;
+		}
+		if(extension.equalsIgnoreCase("sub"))
+		{
+			return SubtitlesType.SUB;
+		}
 		return SubtitlesType.UNKNOWN;
 	}
 

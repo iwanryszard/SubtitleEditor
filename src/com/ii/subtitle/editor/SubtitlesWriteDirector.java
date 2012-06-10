@@ -36,14 +36,22 @@ public class SubtitlesWriteDirector implements SubtitleTextVisitor
 		}
 		catch (IOException e)
 		{
-			writer.onGenerationEnd();
+			try
+			{
+				writer.onGenerationEnd();
+			}
+			catch (Exception e1)
+			{
+				
+			}
 			e.printStackTrace();
 		}
 
 	}
 
-	private void writeSubtitleText(SubtitleText text)
+	private void writeSubtitleText(SubtitleText text) throws IOException
 	{
+		writer.onSubtitleStartText();
 		text.acceptVisitor(this);
 	}
 

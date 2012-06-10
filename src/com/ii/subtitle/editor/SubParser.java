@@ -44,8 +44,6 @@ public class SubParser extends SubtitlesParser
 
 		for (int i = start; i < subtitleRaw.length; i++)
 		{
-			Subtitle sub = new Subtitle();
-			sub.setSubtitleNumber(i - start);
 			String framesString = getFramesString(subtitleRaw[i]);
 			if(framesString == null)
 			{
@@ -65,15 +63,15 @@ public class SubParser extends SubtitlesParser
 	{
 		int previousLength = subtitleString.length();
 		subtitleString = boldPattern.matcher(subtitleString).replaceAll("");
-		boolean bold = previousLength == subtitleString.length();
+		boolean bold = previousLength != subtitleString.length();
 		
 		previousLength = subtitleString.length();
 		subtitleString = italicsPattern.matcher(subtitleString).replaceAll("");
-		boolean italics = previousLength == subtitleString.length();
+		boolean italics = previousLength != subtitleString.length();
 		
 		previousLength = subtitleString.length();
 		subtitleString = underlinePattern.matcher(subtitleString).replaceAll("");
-		boolean underline = previousLength == subtitleString.length();
+		boolean underline = previousLength != subtitleString.length();
 		//TODO check for typeface
 		
 		TextGroup root = new TextGroup(Type.ROOT);
@@ -98,7 +96,7 @@ public class SubParser extends SubtitlesParser
 	
 	private void addText(TextGroup currentGroup, String text)
 	{
-		String[] lines = text.split("|");
+		String[] lines = text.split("\\|");
 		for (int i = 0; i < lines.length; i++)
 		{
 			String line = lines[i];
@@ -106,7 +104,7 @@ public class SubParser extends SubtitlesParser
 			{
 				continue;
 			}
-			if(i != lines.length)
+			if(i != lines.length - 1)
 			{
 				TextGroup lineGroup = new TextGroup(Type.LINE);
 				lineGroup.addChild(new TextLeaf(line));

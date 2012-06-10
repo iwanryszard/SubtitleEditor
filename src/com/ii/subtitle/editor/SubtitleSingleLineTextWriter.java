@@ -20,7 +20,7 @@ public class SubtitleSingleLineTextWriter extends AbstractSubtitlesWriter
 	@Override
 	public void onTextAdded(String text) throws IOException
 	{
-		writer.write("text");
+		writer.write(text);
 	}
 
 }

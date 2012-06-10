@@ -10,10 +10,10 @@ public class MoveDownCommand extends AbstractSubtitlesCommand
 	private int firstSelIndex;
 	private int secondSelIndex;
 	
-	public MoveDownCommand(Interface interf, SubsTableModel model, int startSubtitle, int selectedCount, 
+	public MoveDownCommand(Interface interf, Subtitles subtitles, int startSubtitle, int selectedCount, 
 			ListSelectionModel selModel)
 	{
-		super(interf, model);
+		super(interf, subtitles);
 		
 		this.startSubtitle = startSubtitle;
 		this.selectedCount = selectedCount;
@@ -35,7 +35,7 @@ public class MoveDownCommand extends AbstractSubtitlesCommand
 	@Override
 	protected boolean internalExecute()
 	{
-		model.moveDownByOne(startSubtitle, selectedCount);
+		subtitles.moveDownByOne(startSubtitle, selectedCount);
 		
 		firstSelIndex = selModel.getAnchorSelectionIndex();
 		secondSelIndex = selModel.getLeadSelectionIndex();

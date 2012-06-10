@@ -1,6 +1,8 @@
 package com.ii.subtitle.editor;
 
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -14,13 +16,29 @@ public abstract class AbstractSubtitlesWriter
 	{
 		this.stream = stream;
 	}
+	
+	public AbstractSubtitlesWriter(File file)
+	{
+		String path = file.getAbsolutePath();
+		file.delete();
+		file = new File(path);
+		try
+		{
+			file.createNewFile();
+			stream = new FileOutputStream(file);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
 
 	public void onGenerationStart() throws IOException
 	{
 		this.writer = new BufferedWriter(new OutputStreamWriter(stream));
 	}
 
-	public void onGenerationEnd()
+	public void onGenerationEnd() throws IOException
 	{
 		try
 		{

@@ -9,6 +9,21 @@ import com.ii.subtitle.editor.SubtitleText.Type;
 public class SrtParser extends SubtitlesParser
 {
 
+	public static int getTime(String timeString)
+	{
+		String startTimeArray[] = timeString.split("[:,]");
+		if (startTimeArray.length > 3)
+		{
+			int miliseconds = Integer.parseInt(startTimeArray[3]);
+			int seconds = Integer.parseInt(startTimeArray[2]);
+			int minutes = Integer.parseInt(startTimeArray[1]);
+			int hours = Integer.parseInt(startTimeArray[0]);
+			return hours * 3600 * 1000 + minutes * 60 * 1000 + seconds * 1000 + miliseconds;
+		}
+		return -1;
+	}
+	
+	
 	public SrtParser(String content)
 	{
 		super(content);
@@ -31,7 +46,7 @@ public class SrtParser extends SubtitlesParser
 				continue;
 			}
 			int[] times = getTimes(timesString);
-			SubtitleText text = getText(subtitleRaw[i].substring(timesString.length()));
+			SubtitleText text = getText(subtitleRaw[i].substring(Math.min(timesString.length() + 1, subtitleRaw[i].length())));
 			if (text == null)
 			{
 				continue;
@@ -72,6 +87,7 @@ public class SrtParser extends SubtitlesParser
 		{
 			builder.append(openedTags.get(i));
 		}
+		builder.append(line);
 		openedTags.clear();
 		line = builder.toString();
 		Pattern p = Pattern.compile("(<[biu]>)|(</[biu]>)");
@@ -107,7 +123,7 @@ public class SrtParser extends SubtitlesParser
 		return builder.toString();
 	}
 
-	private SubtitleText getText(String textString)
+	protected SubtitleText getText(String textString)
 	{
 
 		TextGroup root = new TextGroup(Type.ROOT);
@@ -116,7 +132,7 @@ public class SrtParser extends SubtitlesParser
 		for (int i = 0; i < preDecodedLines.length; i++)
 		{
 			String line = preDecodedLines[i];
-			if (i != preDecodedLines.length)
+			if (i != preDecodedLines.length - 1)
 			{
 				TextGroup lineGroup = new TextGroup(Type.LINE);
 				addTextParts(lineGroup, line, p);
@@ -212,20 +228,6 @@ public class SrtParser extends SubtitlesParser
 			}
 		}
 		return null;
-	}
-
-	private int getTime(String timeString)
-	{
-		String startTimeArray[] = timeString.split("[:,]");
-		if (startTimeArray.length > 3)
-		{
-			int miliseconds = Integer.parseInt(startTimeArray[3]);
-			int seconds = Integer.parseInt(startTimeArray[2]);
-			int minutes = Integer.parseInt(startTimeArray[1]);
-			int hours = Integer.parseInt(startTimeArray[0]);
-			return hours * 3600 * 1000 + minutes * 60 * 1000 + seconds * 1000 + miliseconds;
-		}
-		return -1;
 	}
 
 }

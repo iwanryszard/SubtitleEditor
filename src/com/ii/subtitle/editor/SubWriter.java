@@ -1,5 +1,6 @@
 package com.ii.subtitle.editor;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -15,6 +16,12 @@ public class SubWriter extends AbstractSubtitlesWriter
 	public SubWriter(OutputStream stream, double framesPerSecond)
 	{
 		super(stream);
+		this.framesPerSecond = framesPerSecond;
+	}
+	
+	public SubWriter(File file, double framesPerSecond)
+	{
+		super(file);
 		this.framesPerSecond = framesPerSecond;
 	}
 	

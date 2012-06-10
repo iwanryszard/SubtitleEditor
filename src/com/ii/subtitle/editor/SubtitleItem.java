@@ -13,6 +13,11 @@ public class SubtitleItem
 		this.end = end;
 		this.text = text;
 	}
+	
+	public SubtitleItem(SubtitleItem item)
+	{
+		this(item.start, item.end, item.text);
+	}
 
 	public int getStart()
 	{

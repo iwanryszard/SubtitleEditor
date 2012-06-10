@@ -11,9 +11,9 @@ public class SubsTableModel extends AbstractTableModel
 	
 	private static final String[] columns = new String[] {"Number", "Start", "End", "Content" };
 	
-	private SubtitleList subsList;
+	private Subtitles subsList;
 	
-	public SubsTableModel(SubtitleList subsList)
+	public SubsTableModel(Subtitles subsList)
 	{
 		this.subsList = subsList;
 	}
@@ -33,103 +33,32 @@ public class SubsTableModel extends AbstractTableModel
 	@Override
 	public int getRowCount()
 	{
-		return subsList.getSubtitlesCount();
+		return subsList.getCount();
 	}
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex)
 	{
-		Subtitle sub = subsList.getSubtitleFromIndex(rowIndex);
 		
 		switch(columnIndex)
 		{
 			case 0: 
-				return sub.subtitleNumber;
+				return rowIndex + 1;
 			case 1:
-				return sub.startTimeToString();
+				return subsList.getStart(rowIndex);
 			case 2:
-				return sub.endTimeToString();
+				return subsList.getEnd(rowIndex);
 			case 3:
-				return sub.content;
+				return subsList.getSubtitleTextSingleLine(rowIndex);
 			default:
 				return null;
 		}
 	}
 	
-	public void setSubtitleList(SubtitleList subsList)
+	public void setSubtitleList(Subtitles in)
 	{
-		this.subsList = subsList;
+		this.subsList = in;
 		fireTableDataChanged();
 	}
 	
-	public SubtitleList getSubtitleList()
-	{
-		return subsList;
-	}
-	
-	public void removeSubtitles(int start, int count)
-	{		
-		for (int i = start + count - 1; i >= start; i--)
-		{
-			subsList.removeSubtitleFromIndex(i);
-		}
-		
-		for (int i = start; i < subsList.getSubtitlesCount(); i++)
-		{
-			subsList.getSubtitleFromIndex(i).setSubtitleNumber(i + 1);
-		}
-	}
-	
-	public void moveUpByOne(int startSubtitle, int selectedCount)
-	{
-		Subtitle s = subsList.getSubtitleFromIndex(startSubtitle - 1);
-
-		subsList.removeSubtitleFromIndex(startSubtitle - 1);
-
-		subsList.insertSubtitleAtIndex(startSubtitle + selectedCount - 1, s);
-		for (int i = startSubtitle - 1; i < startSubtitle + selectedCount; i++)
-		{
-			subsList.getSubtitleFromIndex(i).setSubtitleNumber(i + 1);
-		}
-	}
-	
-	public void moveDownByOne(int startSubtitle, int selectedCount)
-	{
-		Subtitle s = subsList.getSubtitleFromIndex(startSubtitle + selectedCount);
-
-		subsList.removeSubtitleFromIndex(startSubtitle + selectedCount);
-
-		subsList.insertSubtitleAtIndex(startSubtitle, s);
-		for (int i = startSubtitle; i < startSubtitle + selectedCount + 1; i++)
-		{
-			subsList.getSubtitleFromIndex(i).setSubtitleNumber(i + 1);
-		}
-	}
-	
-	public void addNewSubtitle(int index)
-	{
-		Subtitle s = new Subtitle();
-		subsList.insertSubtitleAtIndex(index, s);
-
-		for (int i = index; i < subsList.getSubtitlesCount(); i++)
-		{
-			subsList.getSubtitleFromIndex(i).setSubtitleNumber(i + 1);
-		}
-	}
-	
-	public void convertFromFramesToTime(double framesPerSec)
-	{
-		for (int i = 0; i < subsList.getSubtitlesCount(); i++)
-		{
-			subsList.getSubtitleFromIndex(i).framesToTime(framesPerSec);
-		}
-	}
-	
-	public void convertFromTimeToFrames(double framesPerSec)
-	{
-		for (int i = 0; i < subsList.getSubtitlesCount(); i++)
-		{
-			subsList.getSubtitleFromIndex(i).timeToFrames(framesPerSec);
-		}
-	}
 }
