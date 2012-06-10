@@ -28,31 +28,100 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 
 import com.ii.subtitle.editor.SubtitlesParser.WrongFormatException;
 import javax.swing.JTextField;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
 
-/**
- * 
- * @author Ivo
- */
 public class Interface extends javax.swing.JFrame
 {
 
-	/**
-	 * 
-	 */
+	public static class Memento
+	{
+		private int currentSubtitle;
+		private String startFieldText;
+		private String endFieldText;
+		private String durationFieldText;
+		private String textAreaText;
+		private boolean isSaved;
+		private boolean isFrames;
+		private String textAreaContentType;
+
+		public Memento(int currentSubtitle, String startFieldText, String endFieldText, String durationFieldText, String textAreaText,
+				boolean isSaved, boolean isFrames, String textAreaContentType)
+		{
+			this.currentSubtitle = currentSubtitle;
+			this.startFieldText = startFieldText;
+			this.endFieldText = endFieldText;
+			this.durationFieldText = durationFieldText;
+			this.textAreaText = textAreaText;
+			this.isSaved = isSaved;
+			this.isFrames = isFrames;
+			this.textAreaContentType = textAreaContentType;
+		}
+	}
+
 	private static final long serialVersionUID = -6987211339001684349L;
 
-	/** Creates new form Interface */
+	public static void main(String args[])
+	{
+		java.awt.EventQueue.invokeLater(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				new Interface().setVisible(true);
+			}
+		});
+
+	}
+
+	private javax.swing.JComboBox<String> FPSComboBox;
+
+	private javax.swing.JLabel FPSLabel;
+
+	private javax.swing.JTextPane TextArea;
+
+	private javax.swing.JButton deleteButton;
+
+	private javax.swing.JLabel durationLabel;
+
+	private javax.swing.JButton editButton;
+	private javax.swing.JLabel endLabel;
+	private javax.swing.JButton exitButton;
+	private javax.swing.JRadioButton framesRadioButton;
+	private javax.swing.JPanel jPanel1;
+	private javax.swing.JScrollPane jScrollPane1;
+	private javax.swing.JScrollPane jScrollPane2;
+	private javax.swing.JTable jTable2;
+	private javax.swing.JTextField startField;
+	private javax.swing.JTextField endField;
+	private javax.swing.JTextField durationField;
+	private javax.swing.JButton moveDownButton;
+	private javax.swing.JButton moveUpButton;
+	private javax.swing.JButton newSubAfterButton;
+	private javax.swing.JButton newSubBeforeButton;
+	private javax.swing.JButton openButton;
+	private javax.swing.JButton saveAsButton;
+	private javax.swing.JButton saveButton;
+	private javax.swing.JLabel startLabel;
+	private javax.swing.JLabel switchLabel;
+	private javax.swing.JLabel textLabel;
+	private javax.swing.JRadioButton timeRadioButton;
+	private JButton btnInterpolate;
+	private JButton btnTranslate;
+	private Subtitles in = new Subtitles(new ArrayList<SubtitleItem>());
+	File currentFile;
+	File quoteFile;
+	boolean quoteHasPath = false;
+	int currentSubtitle = 0;
+
+	boolean isFrames = false;
+	boolean hasPath = false;
+	boolean isSaved = false;
+	private JTextField translateTextField;
+	private JTextField interpolateStartInterval;
+	private JTextField interpolateEndInterval;
+
 	public Interface()
 	{
 		initComponents();
-	}
-
-	@Override
-	public void setTitle(String title)
-	{
-		super.setTitle(title);
 	}
 
 	private void initComponents()
@@ -96,36 +165,36 @@ public class Interface extends javax.swing.JFrame
 
 		TextArea.addMouseListener(new MouseListener()
 		{
-			
-			@Override
-			public void mouseReleased(MouseEvent e)
-			{
-				
-			}
-			
-			@Override
-			public void mousePressed(MouseEvent e)
-			{
-				
-			}
-			
-			@Override
-			public void mouseExited(MouseEvent e)
-			{
-				
-			}
-			
-			@Override
-			public void mouseEntered(MouseEvent e)
-			{
-				
-			}
-			
+
 			@Override
 			public void mouseClicked(MouseEvent e)
 			{
-				if(TextArea.getContentType().equals("text/html"))
-				setTextAreaMode(true);
+				if (TextArea.getContentType().equals("text/html"))
+					setTextAreaMode(true);
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e)
+			{
+
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e)
+			{
+
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e)
+			{
+
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e)
+			{
+
 			}
 		});
 
@@ -134,6 +203,7 @@ public class Interface extends javax.swing.JFrame
 		FPSComboBox.setSelectedIndex(2);
 		FPSComboBox.addActionListener(new java.awt.event.ActionListener()
 		{
+			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt)
 			{
 				setFPS();
@@ -161,6 +231,7 @@ public class Interface extends javax.swing.JFrame
 		newSubBeforeButton.setText("Add New Before");
 		newSubBeforeButton.addActionListener(new java.awt.event.ActionListener()
 		{
+			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt)
 			{
 				currentSubtitle = jTable2.getSelectedRow();
@@ -178,6 +249,7 @@ public class Interface extends javax.swing.JFrame
 		newSubAfterButton.setText("Add New After");
 		newSubAfterButton.addActionListener(new java.awt.event.ActionListener()
 		{
+			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt)
 			{
 				currentSubtitle = jTable2.getSelectedRow() + jTable2.getSelectedRowCount() - 1;
@@ -195,6 +267,7 @@ public class Interface extends javax.swing.JFrame
 		deleteButton.setText("Delete");
 		deleteButton.addActionListener(new java.awt.event.ActionListener()
 		{
+			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt)
 			{
 				currentSubtitle = jTable2.getSelectedRow();
@@ -212,6 +285,7 @@ public class Interface extends javax.swing.JFrame
 		moveUpButton.setText("Move Up");
 		moveUpButton.addActionListener(new java.awt.event.ActionListener()
 		{
+			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt)
 			{
 				currentSubtitle = jTable2.getSelectedRow();
@@ -230,6 +304,7 @@ public class Interface extends javax.swing.JFrame
 		moveDownButton.setText("Move Down");
 		moveDownButton.addActionListener(new java.awt.event.ActionListener()
 		{
+			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt)
 			{
 				currentSubtitle = jTable2.getSelectedRow();
@@ -247,6 +322,7 @@ public class Interface extends javax.swing.JFrame
 		openButton.setText("Open");
 		openButton.addActionListener(new java.awt.event.ActionListener()
 		{
+			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt)
 			{
 
@@ -286,6 +362,7 @@ public class Interface extends javax.swing.JFrame
 		saveButton.setText("Save");
 		saveButton.addActionListener(new java.awt.event.ActionListener()
 		{
+			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt)
 			{
 				if (!isSaved)
@@ -298,6 +375,7 @@ public class Interface extends javax.swing.JFrame
 		exitButton.setText("Exit");
 		exitButton.addActionListener(new java.awt.event.ActionListener()
 		{
+			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt)
 			{
 				System.exit(0);
@@ -334,25 +412,26 @@ public class Interface extends javax.swing.JFrame
 		editButton.setText("Edit");
 		editButton.addActionListener(new java.awt.event.ActionListener()
 		{
+			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt)
 			{
 				String contentType = TextArea.getContentType();
-				if(currentSubtitle <= 0 || currentSubtitle >= in.getCount())
+				if (currentSubtitle <= 0 || currentSubtitle >= in.getCount())
 				{
 					return;
 				}
 				String text = TextArea.getText();
-				if(contentType.equals("text/html"))
+				if (contentType.equals("text/html"))
 				{
 					text = in.getSubtitleHTMLFormattedText(currentSubtitle, false);
 				}
 				TextArea.setContentType("text/html");
-				
-				UpdateCommand update = new UpdateCommand(Interface.this, in, currentSubtitle, text, startField.getText(), endField.getText(), durationField.getText());
+
+				UpdateCommand update = new UpdateCommand(Interface.this, in, currentSubtitle, text, startField.getText(), endField.getText(),
+						durationField.getText());
 				CommandController controller = CommandController.getCommandController();
 				controller.executeCommand(update);
-				
-				
+
 			}
 		});
 
@@ -433,6 +512,7 @@ public class Interface extends javax.swing.JFrame
 		timeRadioButton.setText("Time");
 		timeRadioButton.addActionListener(new java.awt.event.ActionListener()
 		{
+			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt)
 			{
 				if (isFrames)
@@ -448,6 +528,7 @@ public class Interface extends javax.swing.JFrame
 		framesRadioButton.setText("Frames");
 		framesRadioButton.addActionListener(new java.awt.event.ActionListener()
 		{
+			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt)
 			{
 				if (!isFrames)
@@ -467,6 +548,7 @@ public class Interface extends javax.swing.JFrame
 		saveAsButton.setText("Save as");
 		saveAsButton.addActionListener(new java.awt.event.ActionListener()
 		{
+			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt)
 			{
 				saveAs();
@@ -478,6 +560,7 @@ public class Interface extends javax.swing.JFrame
 		CommandController.getCommandController().registerUndoButton(btnUndo);
 		btnUndo.addActionListener(new ActionListener()
 		{
+			@Override
 			public void actionPerformed(ActionEvent arg0)
 			{
 
@@ -490,6 +573,7 @@ public class Interface extends javax.swing.JFrame
 		CommandController.getCommandController().registerRedoButton(btnRedo);
 		btnRedo.addActionListener(new ActionListener()
 		{
+			@Override
 			public void actionPerformed(ActionEvent arg0)
 			{
 
@@ -497,13 +581,14 @@ public class Interface extends javax.swing.JFrame
 				controller.redoLastCommand();
 			}
 		});
-		
+
 		translateTextField = new JTextField();
 		translateTextField.setText("");
-	
+
 		btnTranslate.setText("Translate");
 		btnTranslate.addActionListener(new ActionListener()
 		{
+			@Override
 			public void actionPerformed(ActionEvent arg0)
 			{
 				if (currentSubtitle >= 0 && in.getCount() > 0)
@@ -515,141 +600,213 @@ public class Interface extends javax.swing.JFrame
 				}
 			}
 		});
-		
+
 		btnInterpolate.setText("Interpolate");
 		btnInterpolate.addActionListener(new ActionListener()
 		{
+			@Override
 			public void actionPerformed(ActionEvent arg0)
 			{
-				if(currentSubtitle >= 0 && in.getCount() > 0)
+				if (currentSubtitle >= 0 && in.getCount() > 0)
 				{
-					InterpolateCommand interpolate = new InterpolateCommand(Interface.this, in, currentSubtitle, jTable2.getSelectionModel(), interpolateStartInterval.getText(), interpolateEndInterval.getText());
+					InterpolateCommand interpolate = new InterpolateCommand(Interface.this, in, currentSubtitle, jTable2.getSelectionModel(),
+							interpolateStartInterval.getText(), interpolateEndInterval.getText());
 					CommandController controller = CommandController.getCommandController();
 					controller.executeCommand(interpolate);
 				}
 			}
 		});
-		
+
 		interpolateStartInterval = new JTextField();
 		interpolateStartInterval.setText("");
-		
+
 		interpolateEndInterval = new JTextField();
 		interpolateEndInterval.setText("");
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-		layout.setHorizontalGroup(
-			layout.createParallelGroup(Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(layout.createParallelGroup(Alignment.LEADING)
-						.addGroup(layout.createSequentialGroup()
-							.addGroup(layout.createParallelGroup(Alignment.LEADING)
-								.addComponent(jScrollPane2, GroupLayout.PREFERRED_SIZE, 801, GroupLayout.PREFERRED_SIZE)
-								.addGroup(layout.createSequentialGroup()
-									.addComponent(openButton, GroupLayout.PREFERRED_SIZE, 72, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(saveButton, GroupLayout.PREFERRED_SIZE, 69, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(saveAsButton)
-									.addGap(160)
-									.addComponent(btnUndo)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnRedo)))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(layout.createParallelGroup(Alignment.LEADING)
-								.addGroup(layout.createSequentialGroup()
-									.addGap(8)
-									.addGroup(layout.createParallelGroup(Alignment.TRAILING)
-										.addGroup(layout.createSequentialGroup()
-											.addComponent(FPSLabel)
-											.addGap(31))
-										.addGroup(layout.createSequentialGroup()
-											.addComponent(switchLabel)
-											.addGap(18)))
-									.addGroup(layout.createParallelGroup(Alignment.LEADING)
-										.addComponent(framesRadioButton)
-										.addComponent(timeRadioButton, GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE)
-										.addComponent(FPSComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-								.addGroup(layout.createParallelGroup(Alignment.TRAILING, false)
-									.addComponent(newSubAfterButton, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addComponent(newSubBeforeButton, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-								.addGroup(layout.createParallelGroup(Alignment.TRAILING, false)
-									.addComponent(deleteButton, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addComponent(moveUpButton, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addComponent(moveDownButton, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-								.addComponent(exitButton, GroupLayout.PREFERRED_SIZE, 69, GroupLayout.PREFERRED_SIZE)))
-						.addGroup(layout.createSequentialGroup()
-							.addComponent(jPanel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(layout.createParallelGroup(Alignment.LEADING, false)
-								.addComponent(btnTranslate, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(btnInterpolate, GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE))
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addGroup(layout.createParallelGroup(Alignment.LEADING)
-								.addGroup(layout.createSequentialGroup()
-									.addComponent(interpolateStartInterval, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(interpolateEndInterval, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE))
-								.addComponent(translateTextField, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE))))
-					.addContainerGap())
-		);
-		layout.setVerticalGroup(
-			layout.createParallelGroup(Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(layout.createParallelGroup(Alignment.TRAILING)
-						.addGroup(layout.createSequentialGroup()
-							.addGroup(layout.createParallelGroup(Alignment.TRAILING)
-								.addGroup(layout.createSequentialGroup()
-									.addComponent(timeRadioButton)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(framesRadioButton)
-									.addGap(39))
-								.addGroup(layout.createSequentialGroup()
-									.addComponent(switchLabel)
-									.addGap(56)))
-							.addGroup(layout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(FPSComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(FPSLabel))
-							.addGap(45)
-							.addComponent(newSubBeforeButton)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(newSubAfterButton)
-							.addGap(36)
-							.addComponent(deleteButton)
-							.addGap(34)
-							.addComponent(moveUpButton)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(moveDownButton)
-							.addGap(40))
-						.addGroup(layout.createSequentialGroup()
-							.addGroup(layout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(openButton)
-								.addComponent(saveButton)
-								.addComponent(saveAsButton)
-								.addComponent(btnUndo)
-								.addComponent(btnRedo))
-							.addGap(9)
-							.addComponent(jScrollPane2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(layout.createParallelGroup(Alignment.LEADING)
-						.addGroup(layout.createSequentialGroup()
-							.addGroup(layout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(translateTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnTranslate))
-							.addGap(35)
-							.addGroup(layout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnInterpolate)
-								.addComponent(interpolateStartInterval, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(interpolateEndInterval, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addPreferredGap(ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
-							.addComponent(exitButton, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE))
-						.addComponent(jPanel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap())
-		);
+		layout.setHorizontalGroup(layout.createParallelGroup(Alignment.LEADING).addGroup(
+				layout.createSequentialGroup()
+						.addContainerGap()
+						.addGroup(
+								layout.createParallelGroup(Alignment.LEADING)
+										.addGroup(
+												layout.createSequentialGroup()
+														.addGroup(
+																layout.createParallelGroup(Alignment.LEADING)
+																		.addComponent(jScrollPane2, GroupLayout.PREFERRED_SIZE, 801,
+																				GroupLayout.PREFERRED_SIZE)
+																		.addGroup(
+																				layout.createSequentialGroup()
+																						.addComponent(openButton, GroupLayout.PREFERRED_SIZE, 72,
+																								GroupLayout.PREFERRED_SIZE)
+																						.addPreferredGap(ComponentPlacement.RELATED)
+																						.addComponent(saveButton, GroupLayout.PREFERRED_SIZE, 69,
+																								GroupLayout.PREFERRED_SIZE)
+																						.addPreferredGap(ComponentPlacement.RELATED)
+																						.addComponent(saveAsButton).addGap(160).addComponent(btnUndo)
+																						.addPreferredGap(ComponentPlacement.RELATED)
+																						.addComponent(btnRedo)))
+														.addPreferredGap(ComponentPlacement.RELATED)
+														.addGroup(
+																layout.createParallelGroup(Alignment.LEADING)
+																		.addGroup(
+																				layout.createSequentialGroup()
+																						.addGap(8)
+																						.addGroup(
+																								layout.createParallelGroup(Alignment.TRAILING)
+																										.addGroup(
+																												layout.createSequentialGroup()
+																														.addComponent(FPSLabel)
+																														.addGap(31))
+																										.addGroup(
+																												layout.createSequentialGroup()
+																														.addComponent(switchLabel)
+																														.addGap(18)))
+																						.addGroup(
+																								layout.createParallelGroup(Alignment.LEADING)
+																										.addComponent(framesRadioButton)
+																										.addComponent(timeRadioButton,
+																												GroupLayout.DEFAULT_SIZE, 118,
+																												Short.MAX_VALUE)
+																										.addComponent(FPSComboBox,
+																												GroupLayout.PREFERRED_SIZE,
+																												GroupLayout.DEFAULT_SIZE,
+																												GroupLayout.PREFERRED_SIZE)))
+																		.addGroup(
+																				layout.createParallelGroup(Alignment.TRAILING, false)
+																						.addComponent(newSubAfterButton, Alignment.LEADING,
+																								GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
+																								Short.MAX_VALUE)
+																						.addComponent(newSubBeforeButton, Alignment.LEADING,
+																								GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
+																								Short.MAX_VALUE))
+																		.addGroup(
+																				layout.createParallelGroup(Alignment.TRAILING, false)
+																						.addComponent(deleteButton, Alignment.LEADING,
+																								GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
+																								Short.MAX_VALUE)
+																						.addComponent(moveUpButton, Alignment.LEADING,
+																								GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
+																								Short.MAX_VALUE)
+																						.addComponent(moveDownButton, Alignment.LEADING,
+																								GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
+																								Short.MAX_VALUE))
+																		.addComponent(exitButton, GroupLayout.PREFERRED_SIZE, 69,
+																				GroupLayout.PREFERRED_SIZE)))
+										.addGroup(
+												layout.createSequentialGroup()
+														.addComponent(jPanel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+																GroupLayout.PREFERRED_SIZE)
+														.addPreferredGap(ComponentPlacement.RELATED)
+														.addGroup(
+																layout.createParallelGroup(Alignment.LEADING, false)
+																		.addComponent(btnTranslate, GroupLayout.DEFAULT_SIZE,
+																				GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+																		.addComponent(btnInterpolate, GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE))
+														.addPreferredGap(ComponentPlacement.UNRELATED)
+														.addGroup(
+																layout.createParallelGroup(Alignment.LEADING)
+																		.addGroup(
+																				layout.createSequentialGroup()
+																						.addComponent(interpolateStartInterval,
+																								GroupLayout.PREFERRED_SIZE, 80,
+																								GroupLayout.PREFERRED_SIZE)
+																						.addPreferredGap(ComponentPlacement.RELATED)
+																						.addComponent(interpolateEndInterval,
+																								GroupLayout.PREFERRED_SIZE, 80,
+																								GroupLayout.PREFERRED_SIZE))
+																		.addComponent(translateTextField, GroupLayout.PREFERRED_SIZE, 80,
+																				GroupLayout.PREFERRED_SIZE)))).addContainerGap()));
+		layout.setVerticalGroup(layout
+				.createParallelGroup(Alignment.LEADING)
+				.addGroup(
+						layout.createSequentialGroup()
+								.addContainerGap()
+								.addGroup(
+										layout.createParallelGroup(Alignment.TRAILING)
+												.addGroup(
+														layout.createSequentialGroup()
+																.addGroup(
+																		layout.createParallelGroup(Alignment.TRAILING)
+																				.addGroup(
+																						layout.createSequentialGroup().addComponent(timeRadioButton)
+																								.addPreferredGap(ComponentPlacement.RELATED)
+																								.addComponent(framesRadioButton).addGap(39))
+																				.addGroup(
+																						layout.createSequentialGroup().addComponent(switchLabel)
+																								.addGap(56)))
+																.addGroup(
+																		layout.createParallelGroup(Alignment.BASELINE)
+																				.addComponent(FPSComboBox, GroupLayout.PREFERRED_SIZE,
+																						GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+																				.addComponent(FPSLabel)).addGap(45).addComponent(newSubBeforeButton)
+																.addPreferredGap(ComponentPlacement.RELATED).addComponent(newSubAfterButton)
+																.addGap(36).addComponent(deleteButton).addGap(34).addComponent(moveUpButton)
+																.addPreferredGap(ComponentPlacement.RELATED).addComponent(moveDownButton).addGap(40))
+												.addGroup(
+														layout.createSequentialGroup()
+																.addGroup(
+																		layout.createParallelGroup(Alignment.BASELINE).addComponent(openButton)
+																				.addComponent(saveButton).addComponent(saveAsButton)
+																				.addComponent(btnUndo).addComponent(btnRedo))
+																.addGap(9)
+																.addComponent(jScrollPane2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+																		GroupLayout.PREFERRED_SIZE)))
+								.addPreferredGap(ComponentPlacement.UNRELATED)
+								.addGroup(
+										layout.createParallelGroup(Alignment.LEADING)
+												.addGroup(
+														layout.createSequentialGroup()
+																.addGroup(
+																		layout.createParallelGroup(Alignment.BASELINE)
+																				.addComponent(translateTextField, GroupLayout.PREFERRED_SIZE,
+																						GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+																				.addComponent(btnTranslate))
+																.addGap(35)
+																.addGroup(
+																		layout.createParallelGroup(Alignment.BASELINE)
+																				.addComponent(btnInterpolate)
+																				.addComponent(interpolateStartInterval, GroupLayout.PREFERRED_SIZE,
+																						GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+																				.addComponent(interpolateEndInterval, GroupLayout.PREFERRED_SIZE,
+																						GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+																.addPreferredGap(ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
+																.addComponent(exitButton, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE))
+												.addComponent(jPanel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+														GroupLayout.PREFERRED_SIZE)).addContainerGap()));
 		getContentPane().setLayout(layout);
 
 		pack();
+	}
+
+	public void manipulateEditPanelValues(String startFieldText, String endFieldText, String durationFieldText, String textAreaText)
+	{
+		startField.setText(startFieldText);
+		endField.setText(endFieldText);
+		durationField.setText(durationFieldText);
+		setTextAreaMode(false);
+	}
+
+	public void manipulateInterpolateValues(String start, String end)
+	{
+		interpolateStartInterval.setText(start);
+		interpolateEndInterval.setText(end);
+	}
+
+	public void manipulateRadioButtonsValues(boolean isTimeSelected, boolean isFramesSelected)
+	{
+		timeRadioButton.setSelected(isTimeSelected);
+		framesRadioButton.setSelected(isFramesSelected);
+	}
+
+	public void manipulateTranslateValues(String translate)
+	{
+		translateTextField.setText(translate);
+	}
+
+	public void notifyJtableDataChanged()
+	{
+		((SubsTableModel) this.jTable2.getModel()).fireTableDataChanged();
 	}
 
 	private void onRowSelected()
@@ -664,35 +821,74 @@ public class Interface extends javax.swing.JFrame
 		}
 	}
 
-	private void setFPS()
+	public void open()
 	{
-		switch (FPSComboBox.getSelectedIndex())
+		String extension = currentFile.getName().substring(currentFile.getName().lastIndexOf('.') + 1);
+		SubtitlesParser parser = null;
+		try
 		{
-		case 0:
-			in.setFrameRatePerSecond(15);
-			break;
-		case 1:
-			in.setFrameRatePerSecond(20);
-			break;
-		case 2:
-			in.setFrameRatePerSecond(23.976);
-			break;
-		case 3:
-			in.setFrameRatePerSecond(23.978);
-			break;
-		case 4:
-			in.setFrameRatePerSecond(24);
-			break;
-		case 5:
-			in.setFrameRatePerSecond(25);
-			break;
-		case 6:
-			in.setFrameRatePerSecond(29.97);
-			break;
-		case 7:
-			in.setFrameRatePerSecond(30);
-			break;
+			parser = SubtitleParserFactory.getSubtitlesParser(new FileInputStream(currentFile), extension);
+			parser.parse();
 		}
+		catch (WrongFormatException e)
+		{
+			e.printStackTrace();
+		}
+		catch (FileNotFoundException e1)
+		{
+			e1.printStackTrace();
+		}
+		in = parser == null ? null : parser.getSubtitles();
+		in = in == null ? new Subtitles(new ArrayList<SubtitleItem>()) : in;
+		if (!in.isInFrames())
+		{
+			timeRadioButton.setSelected(true);
+			framesRadioButton.setSelected(false);
+			isFrames = false;
+		}
+		else
+		{
+			framesRadioButton.setSelected(true);
+			timeRadioButton.setSelected(false);
+			isFrames = true;
+			double fps = in.getFrameRatePerSecond();
+			if (fps == 15)
+				FPSComboBox.setSelectedIndex(0);
+			if (fps == 20)
+				FPSComboBox.setSelectedIndex(1);
+			if (fps == 23.976)
+				FPSComboBox.setSelectedIndex(2);
+			if (fps == 23.978)
+				FPSComboBox.setSelectedIndex(3);
+			if (fps == 24)
+				FPSComboBox.setSelectedIndex(4);
+			if (fps == 25)
+				FPSComboBox.setSelectedIndex(5);
+			if (fps == 29.97)
+				FPSComboBox.setSelectedIndex(6);
+			if (fps == 30)
+				FPSComboBox.setSelectedIndex(7);
+		}
+		if (in.getFrameRatePerSecond() == -1)
+		{
+			setFPS();
+		}
+		setDefaultValues();
+		isSaved = true;
+	}
+
+	public void restoreFromMemento(Memento memento)
+	{
+		currentSubtitle = memento.currentSubtitle;
+		startField.setText(memento.startFieldText);
+		endField.setText(memento.endFieldText);
+		durationField.setText(memento.durationFieldText);
+		TextArea.setContentType(memento.textAreaContentType);
+		TextArea.setText(memento.textAreaText);
+		isSaved = memento.isSaved;
+		isFrames = memento.isFrames;
+		timeRadioButton.setSelected(!isFrames);
+		framesRadioButton.setSelected(isFrames);
 	}
 
 	private void save()
@@ -781,113 +977,15 @@ public class Interface extends javax.swing.JFrame
 		}
 	}
 
-	public static void main(String args[])
+	public Memento saveToMemento()
 	{
-		java.awt.EventQueue.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				new Interface().setVisible(true);
-			}
-		});
-
+		return new Memento(currentSubtitle, startField.getText(), endField.getText(), durationField.getText(), TextArea.getText(), isSaved, isFrames,
+				TextArea.getContentType());
 	}
 
-	private javax.swing.JComboBox<String> FPSComboBox;
-	private javax.swing.JLabel FPSLabel;
-	private javax.swing.JTextPane TextArea;
-	private javax.swing.JButton deleteButton;
-	private javax.swing.JLabel durationLabel;
-	private javax.swing.JButton editButton;
-	private javax.swing.JLabel endLabel;
-	private javax.swing.JButton exitButton;
-	private javax.swing.JRadioButton framesRadioButton;
-	private javax.swing.JPanel jPanel1;
-	private javax.swing.JScrollPane jScrollPane1;
-	private javax.swing.JScrollPane jScrollPane2;
-	private javax.swing.JTable jTable2;
-	private javax.swing.JTextField startField;
-	private javax.swing.JTextField endField;
-	private javax.swing.JTextField durationField;
-	private javax.swing.JButton moveDownButton;
-	private javax.swing.JButton moveUpButton;
-	private javax.swing.JButton newSubAfterButton;
-	private javax.swing.JButton newSubBeforeButton;
-	private javax.swing.JButton openButton;
-	private javax.swing.JButton saveAsButton;
-	private javax.swing.JButton saveButton;
-	private javax.swing.JLabel startLabel;
-	private javax.swing.JLabel switchLabel;
-	private javax.swing.JLabel textLabel;
-	private javax.swing.JRadioButton timeRadioButton;
-	private JButton btnInterpolate;
-	private JButton btnTranslate;
-
-	private Subtitles in = new Subtitles(new ArrayList<SubtitleItem>());
-	File currentFile;
-	File quoteFile;
-	boolean quoteHasPath = false;
-	int currentSubtitle = 0;
-	boolean isFrames = false;
-	boolean hasPath = false;
-	boolean isSaved = false;
-	private JTextField translateTextField;
-	private JTextField interpolateStartInterval;
-	private JTextField interpolateEndInterval;
-
-	public void open()
+	private void setDefaultValues()
 	{
-		String extension = currentFile.getName().substring(currentFile.getName().lastIndexOf('.') + 1);
-		SubtitlesParser parser = null;
-		try
-		{
-			parser = SubtitleParserFactory.getSubtitlesParser(new FileInputStream(currentFile), extension);
-			parser.parse();
-		}
-		catch (WrongFormatException e)
-		{
-			e.printStackTrace();
-		}
-		catch (FileNotFoundException e1)
-		{
-			e1.printStackTrace();
-		}
-		in = parser == null ? null : parser.getSubtitles();
-		in = in == null ? new Subtitles(new ArrayList<SubtitleItem>()) : in;
-		if (!in.isInFrames())
-		{
-			timeRadioButton.setSelected(true);
-			framesRadioButton.setSelected(false);
-			isFrames = false;
-		}
-		else
-		{
-			framesRadioButton.setSelected(true);
-			timeRadioButton.setSelected(false);
-			isFrames = true;
-			double fps = in.getFrameRatePerSecond();
-			if (fps == 15)
-				FPSComboBox.setSelectedIndex(0);
-			if (fps == 20)
-				FPSComboBox.setSelectedIndex(1);
-			if (fps == 23.976)
-				FPSComboBox.setSelectedIndex(2);
-			if (fps == 23.978)
-				FPSComboBox.setSelectedIndex(3);
-			if (fps == 24)
-				FPSComboBox.setSelectedIndex(4);
-			if (fps == 25)
-				FPSComboBox.setSelectedIndex(5);
-			if (fps == 29.97)
-				FPSComboBox.setSelectedIndex(6);
-			if (fps == 30)
-				FPSComboBox.setSelectedIndex(7);
-		}
-		if (in.getFrameRatePerSecond() == -1)
-		{
-			setFPS();
-		}
-		if(in.getCount() > 0)
+		if (in.getCount() > 0)
 		{
 			manipulateInterpolateValues(in.getStart(0), in.getStart(in.getCount() - 1));
 		}
@@ -896,89 +994,45 @@ public class Interface extends javax.swing.JFrame
 			manipulateInterpolateValues(in.isInFrames() ? "0" : "00:00:00,000", in.isInFrames() ? "0" : "00:00:00,000");
 		}
 		manipulateTranslateValues(in.isInFrames() ? "0" : "00:00:00,000");
-		isSaved = true;
 	}
 
-	public void notifyJtableDataChanged()
+	private void setFPS()
 	{
-		((SubsTableModel) this.jTable2.getModel()).fireTableDataChanged();
-	}
-
-	public void manipulateEditPanelValues(String startFieldText, String endFieldText, String durationFieldText, String textAreaText)
-	{
-		startField.setText(startFieldText);
-		endField.setText(endFieldText);
-		durationField.setText(durationFieldText);
-		setTextAreaMode(false);
-	}
-	
-	public void manipulateInterpolateValues(String start, String end)
-	{
-		interpolateStartInterval.setText(start);
-		interpolateEndInterval.setText(end);
-	}
-	
-	public void manipulateTranslateValues(String translate)
-	{
-		translateTextField.setText(translate);
-	}
-
-	public void manipulateRadioButtonsValues(boolean isTimeSelected, boolean isFramesSelected)
-	{
-		timeRadioButton.setSelected(isTimeSelected);
-		framesRadioButton.setSelected(isFramesSelected);
-	}
-
-	public Memento saveToMemento()
-	{
-		return new Memento(currentSubtitle, startField.getText(), endField.getText(), durationField.getText(), TextArea.getText(), isSaved, isFrames, TextArea.getContentType());
-	}
-
-	public void restoreFromMemento(Memento memento)
-	{
-		currentSubtitle = memento.currentSubtitle;
-		startField.setText(memento.startFieldText);
-		endField.setText(memento.endFieldText);
-		durationField.setText(memento.durationFieldText);
-		TextArea.setContentType(memento.textAreaContentType);
-		TextArea.setText(memento.textAreaText);
-		isSaved = memento.isSaved;
-		isFrames = memento.isFrames;
-		timeRadioButton.setSelected(!isFrames);
-		framesRadioButton.setSelected(isFrames);
+		switch (FPSComboBox.getSelectedIndex())
+		{
+		case 0:
+			in.setFrameRatePerSecond(15);
+			break;
+		case 1:
+			in.setFrameRatePerSecond(20);
+			break;
+		case 2:
+			in.setFrameRatePerSecond(23.976);
+			break;
+		case 3:
+			in.setFrameRatePerSecond(23.978);
+			break;
+		case 4:
+			in.setFrameRatePerSecond(24);
+			break;
+		case 5:
+			in.setFrameRatePerSecond(25);
+			break;
+		case 6:
+			in.setFrameRatePerSecond(29.97);
+			break;
+		case 7:
+			in.setFrameRatePerSecond(30);
+			break;
+		}
 	}
 
 	private void setTextAreaMode(boolean edit)
 	{
 		TextArea.setContentType(edit ? "text/plain" : "text/html");
-		if(currentSubtitle >= 0 && currentSubtitle < in.getCount())
+		if (currentSubtitle >= 0 && currentSubtitle < in.getCount())
 		{
 			TextArea.setText(in.getSubtitleHTMLFormattedText(currentSubtitle, edit));
-		}
-	}
-
-	public static class Memento
-	{
-		private int currentSubtitle;
-		private String startFieldText;
-		private String endFieldText;
-		private String durationFieldText;
-		private String textAreaText;
-		private boolean isSaved;
-		private boolean isFrames;
-		private String textAreaContentType;
-
-		public Memento(int currentSubtitle, String startFieldText, String endFieldText, String durationFieldText, String textAreaText,
-				boolean isSaved, boolean isFrames, String textAreaContentType)
-		{
-			this.currentSubtitle = currentSubtitle;
-			this.startFieldText = startFieldText;
-			this.endFieldText = endFieldText;
-			this.durationFieldText = durationFieldText;
-			this.textAreaText = textAreaText;
-			this.isSaved = isSaved;
-			this.isFrames = isFrames;
-			this.textAreaContentType = textAreaContentType;
 		}
 	}
 }
