@@ -9,18 +9,14 @@ public class CommandController
 	private static final CommandController controller = new CommandController();
 
 	private final Stack<Command> undoStack;
-	private final Stack<UIMemento> undoMementos;
 	private final Stack<Command> redoStack;
-	private final Stack<UIMemento> redoMementos;
 
 	private CommandActionsHandler handler;
 
 	private CommandController()
 	{
 		undoStack = new Stack<>();
-		undoMementos = new Stack<>();
 		redoStack = new Stack<>();
-		redoMementos = new Stack<>();
 	}
 
 	public static CommandController getInstance()
@@ -30,21 +26,18 @@ public class CommandController
 
 	public void executeCommand(Command command)
 	{
-		UIMemento memento = this.handler.createMemento();
 		boolean success = command.execute();
 		if (success)
 		{
 			this.undoStack.push(command);
-			this.undoMementos.push(memento);
 			this.redoStack.clear();
-			this.redoMementos.clear();
 
 			this.handler.notifyChanged();
 			this.handler.updateActionsEnabledState(!undoStack.empty(), !redoStack.empty());
 		}
 	}
 
-	private void performTransition(Stack<Command> from, Stack<UIMemento> fromMemento, Stack<Command> to, Stack<UIMemento> toMemento, boolean execute)
+	private void performTransition(Stack<Command> from, Stack<Command> to, boolean execute)
 	{
 		if (from.empty())
 		{
@@ -56,9 +49,6 @@ public class CommandController
 		if (success)
 		{
 			to.push(from.pop());
-			UIMemento memento = fromMemento.pop();
-			toMemento.push(memento);
-			this.handler.restoreToMemento(memento);
 
 			this.handler.notifyChanged();
 			this.handler.updateActionsEnabledState(!this.undoStack.empty(), !this.redoStack.empty());
@@ -67,20 +57,18 @@ public class CommandController
 
 	public void undoLastCommand()
 	{
-		this.performTransition(this.undoStack, this.undoMementos, this.redoStack, this.redoMementos, false);
+		this.performTransition(this.undoStack, this.redoStack, false);
 	}
 
 	public void redoLastCommand()
 	{
-		this.performTransition(this.redoStack, this.redoMementos, this.undoStack, this.undoMementos, true);
+		this.performTransition(this.redoStack, this.undoStack, true);
 	}
 
 	public void clearCommandHistory()
 	{
 		this.undoStack.clear();
-		this.undoMementos.clear();
 		this.redoStack.clear();
-		this.redoMementos.clear();
 
 		this.handler.updateActionsEnabledState(!this.undoStack.empty(), !this.redoStack.empty());
 	}
@@ -90,19 +78,10 @@ public class CommandController
 		this.handler = handler;
 	}
 
-	public interface UIMemento
-	{
-
-	}
-
 	public interface CommandActionsHandler
 	{
 		void updateActionsEnabledState(boolean undoEnabled, boolean redoEnabled);
 
 		void notifyChanged();
-
-		UIMemento createMemento();
-
-		void restoreToMemento(UIMemento memento);
 	}
 }

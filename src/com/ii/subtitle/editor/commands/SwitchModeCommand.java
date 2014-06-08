@@ -23,9 +23,9 @@ public class SwitchModeCommand extends AbstractSubtitlesCommand
 		}
 	}
 
-	public SwitchModeCommand(Subtitles subtitles, int subtitleIndex, double framesPerSec, boolean isFrames)
+	public SwitchModeCommand(SelectionModel model, Subtitles subtitles, double framesPerSec, boolean isFrames)
 	{
-		super(subtitles);
+		super(model, subtitles);
 		this.framesPerSec = framesPerSec;
 		this.isInFrames = isFrames;
 	}

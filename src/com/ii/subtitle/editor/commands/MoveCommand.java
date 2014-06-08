@@ -2,49 +2,28 @@ package com.ii.subtitle.editor.commands;
 
 import java.util.Collections;
 
-import javax.swing.ListSelectionModel;
-
 import com.ii.subtitle.editor.Subtitles;
 
 public class MoveCommand extends AbstractSubtitlesCommand
 {
 	private int startSubtitle;
 	private int selectedCount;
-	private ListSelectionModel selModel;
-	private int firstSelIndex;
-	private int secondSelIndex;
 	private int direction; // +/-1
 
-	public MoveCommand(Subtitles subtitles, int startSubtitle, int selectedCount, int direction, ListSelectionModel selModel)
+	public MoveCommand(SelectionModel model, Subtitles subtitles, int direction)
 	{
-		super(subtitles);
+		super(model, subtitles);
 
 		this.direction = direction != 1 ? -1 : direction;
-		this.startSubtitle = startSubtitle;
-		this.selectedCount = selectedCount;
-		this.selModel = selModel;
-	}
-
-	@Override
-	protected void executeAfterFireTableDataChanged()
-	{
-		selModel.setSelectionInterval(startSubtitle + direction, startSubtitle + selectedCount - 1 + direction);
-	}
-
-	@Override
-	protected void undoAfterFireTableDataChanged()
-	{
-		selModel.setSelectionInterval(firstSelIndex, secondSelIndex);
+		this.startSubtitle = model.getStartSelectionIndex();
+		this.selectedCount = model.getEndSelectionIndex() - this.startSubtitle + 1;
 	}
 
 	@Override
 	protected boolean internalExecute()
 	{
 		moveSubtitles(startSubtitle, selectedCount, direction);
-
-		firstSelIndex = selModel.getAnchorSelectionIndex();
-		secondSelIndex = selModel.getLeadSelectionIndex();
-
+		model.setSelection(startSubtitle + direction, startSubtitle + selectedCount - 1 + direction);
 		return true;
 	}
 
@@ -65,6 +44,7 @@ public class MoveCommand extends AbstractSubtitlesCommand
 	protected boolean internalUndo()
 	{
 		moveSubtitles(startSubtitle + direction, selectedCount, -direction);
+		model.setSelection(this.startSubtitle, this.startSubtitle + this.selectedCount - 1);
 		return true;
 	}
 }

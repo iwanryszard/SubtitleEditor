@@ -14,15 +14,15 @@ public class UpdateCommand extends AbstractSubtitlesCommand
 	private String duration;
 	private SubtitleItem oldSubtitle;
 
-	public UpdateCommand(Subtitles subtitles, int index, String text, String start, String end, String duration)
+	public UpdateCommand(SelectionModel model, Subtitles subtitles, String text, String start, String end, String duration)
 	{
-		super(subtitles);
-		this.subtitleIndex = index;
+		super(model, subtitles);
 		this.text = text;
 		this.start = start;
 		this.end = end;
 		this.duration = duration;
 		this.oldSubtitle = null;
+		this.subtitleIndex = this.model.getStartSelectionIndex();
 	}
 
 	@Override

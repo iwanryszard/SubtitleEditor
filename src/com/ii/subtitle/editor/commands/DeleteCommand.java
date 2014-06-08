@@ -9,31 +9,33 @@ import com.ii.subtitle.editor.Subtitles;
 
 public class DeleteCommand extends AbstractSubtitlesCommand
 {
-	private int startSubtitle;
-	private int selectedCount;
 	private List<SubtitleItem> removedItems;
+	private int firstSelIndex;
+	private int secondSelIndex;
 	
-	public DeleteCommand(Subtitles subtitles, int startSubtitle, int selectedCount)
+	public DeleteCommand(SelectionModel model, Subtitles subtitles)
 	{
-		super(subtitles);
+		super(model, subtitles);
 		
-		this.startSubtitle = startSubtitle;
-		this.selectedCount = selectedCount;
+		this.firstSelIndex = model.getStartSelectionIndex();
+		this.secondSelIndex = model.getEndSelectionIndex();
 	}
 
 	@Override
 	protected boolean internalExecute()
 	{
-		List<SubtitleItem> range = subtitles.subList(startSubtitle, startSubtitle + selectedCount);
+		List<SubtitleItem> range = subtitles.subList(this.firstSelIndex, this.secondSelIndex);
 		removedItems = new ArrayList<>(range);
 		range.clear();
+		model.setSelection(-1, -1);
 		return true;
 	}
 
 	@Override
 	protected boolean internalUndo()
 	{
-		subtitles.addAll(startSubtitle, removedItems);
+		subtitles.addAll(this.firstSelIndex, removedItems);
+		model.setSelection(firstSelIndex, secondSelIndex);
 		return true;
 	}
 }

@@ -5,39 +5,40 @@ import com.ii.subtitle.editor.Subtitles;
 
 public abstract class AbstractSubtitlesCommand implements Command
 {
+	protected SelectionModel model;
 	protected Subtitles subtitles;
-	
-	public AbstractSubtitlesCommand(Subtitles subtitles)
+
+	public AbstractSubtitlesCommand(SelectionModel model, Subtitles subtitles)
 	{
+		this.model = model;
 		this.subtitles = subtitles;
 	}
-	
+
 	protected abstract boolean internalExecute();
-	
+
 	protected abstract boolean internalUndo();
-	
-	protected void executeAfterFireTableDataChanged()
-	{
-		
-	}
-	
-	protected void undoAfterFireTableDataChanged()
-	{
-		
-	}
-	
+
 	@Override
 	public boolean execute()
 	{
-		boolean result = internalExecute();		
+		boolean result = internalExecute();
 		return result;
 	}
 
 	@Override
 	public boolean undo()
 	{
-		boolean result = internalUndo();	
+		boolean result = internalUndo();
 		return result;
+	}
+
+	public interface SelectionModel
+	{
+		int getStartSelectionIndex();
+
+		int getEndSelectionIndex();
+
+		void setSelection(int start, int end);
 	}
 
 }

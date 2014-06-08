@@ -1,40 +1,21 @@
 package com.ii.subtitle.editor.commands;
 
-import javax.swing.ListSelectionModel;
-
-import com.ii.subtitle.editor.Interface;
 import com.ii.subtitle.editor.SubtitleItem;
 import com.ii.subtitle.editor.Subtitles;
 
 public class TranslateCommand extends AbstractSubtitlesCommand
 {
-	private int subtitleIndex;
-	private ListSelectionModel selModel;
 	private int firstSelIndex;
 	private int secondSelIndex;
 	private int translate;
 	
-	public TranslateCommand(Interface interf, Subtitles subtitles, int subtitleIndex, ListSelectionModel selModel, int translate)
+	public TranslateCommand(SelectionModel model, Subtitles subtitles, int translate)
 	{
-		super(subtitles);
+		super(model, subtitles);
 		
-		this.subtitleIndex = subtitleIndex;
-		this.selModel = selModel;
 		this.translate = translate;
-		this.firstSelIndex = selModel.getAnchorSelectionIndex();
-		this.secondSelIndex = selModel.getLeadSelectionIndex();
-	}
-	
-	@Override
-	protected void executeAfterFireTableDataChanged()
-	{
-		selModel.setSelectionInterval(subtitleIndex, subtitleIndex);
-	}
-	
-	@Override
-	protected void undoAfterFireTableDataChanged()
-	{
-		selModel.setSelectionInterval(firstSelIndex, secondSelIndex);
+		this.firstSelIndex = model.getStartSelectionIndex();
+		this.secondSelIndex = model.getEndSelectionIndex();
 	}
 	
 	private void executeTranslate(int translate){

@@ -23,10 +23,12 @@ import java.util.ArrayList;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 import com.ii.subtitle.editor.SubtitlesParser.WrongFormatException;
+import com.ii.subtitle.editor.commands.AbstractSubtitlesCommand.SelectionModel;
 import com.ii.subtitle.editor.commands.AddNewCommand;
 import com.ii.subtitle.editor.commands.CommandController;
 import com.ii.subtitle.editor.commands.DeleteCommand;
@@ -36,37 +38,11 @@ import com.ii.subtitle.editor.commands.SwitchModeCommand;
 import com.ii.subtitle.editor.commands.TranslateCommand;
 import com.ii.subtitle.editor.commands.UpdateCommand;
 import com.ii.subtitle.editor.commands.CommandController.CommandActionsHandler;
-import com.ii.subtitle.editor.commands.CommandController.UIMemento;
 
 import javax.swing.JTextField;
 
-public class Interface extends javax.swing.JFrame implements CommandActionsHandler
+public class Interface extends javax.swing.JFrame implements CommandActionsHandler, SelectionModel, ActionListener
 {
-
-	public static class Memento implements UIMemento
-	{
-		private int currentSubtitle;
-		private String startFieldText;
-		private String endFieldText;
-		private String durationFieldText;
-		private String textAreaText;
-		private boolean isSaved;
-		private boolean isFrames;
-		private String textAreaContentType;
-
-		public Memento(int currentSubtitle, String startFieldText, String endFieldText, String durationFieldText, String textAreaText,
-				boolean isSaved, boolean isFrames, String textAreaContentType)
-		{
-			this.currentSubtitle = currentSubtitle;
-			this.startFieldText = startFieldText;
-			this.endFieldText = endFieldText;
-			this.durationFieldText = durationFieldText;
-			this.textAreaText = textAreaText;
-			this.isSaved = isSaved;
-			this.isFrames = isFrames;
-			this.textAreaContentType = textAreaContentType;
-		}
-	}
 
 	private static final long serialVersionUID = -6987211339001684349L;
 
@@ -95,7 +71,6 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 
 	private javax.swing.JButton editButton;
 	private javax.swing.JLabel endLabel;
-	private javax.swing.JButton exitButton;
 	private javax.swing.JRadioButton framesRadioButton;
 	private javax.swing.JPanel jPanel1;
 	private javax.swing.JScrollPane jScrollPane1;
@@ -121,7 +96,6 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 	File currentFile;
 	File quoteFile;
 	boolean quoteHasPath = false;
-	int currentSubtitle = 0;
 
 	boolean isFrames = false;
 	boolean hasPath = false;
@@ -150,7 +124,6 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		moveDownButton = new javax.swing.JButton();
 		openButton = new javax.swing.JButton();
 		saveButton = new javax.swing.JButton();
-		exitButton = new javax.swing.JButton();
 		jPanel1 = new javax.swing.JPanel();
 		startLabel = new javax.swing.JLabel();
 		endLabel = new javax.swing.JLabel();
@@ -243,158 +216,25 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		jScrollPane2.setViewportView(jTable2);
 
 		newSubBeforeButton.setText("Add New Before");
-		newSubBeforeButton.addActionListener(new java.awt.event.ActionListener()
-		{
-			@Override
-			public void actionPerformed(java.awt.event.ActionEvent evt)
-			{
-				currentSubtitle = jTable2.getSelectedRow();
-				if (currentSubtitle == -1)
-				{
-					currentSubtitle = 0;
-				}
-
-				AddNewCommand addNew = new AddNewCommand(in, currentSubtitle, jTable2.getSelectionModel());
-				CommandController controller = CommandController.getInstance();
-				controller.executeCommand(addNew);
-			}
-		});
+		newSubBeforeButton.addActionListener(this);
 
 		newSubAfterButton.setText("Add New After");
-		newSubAfterButton.addActionListener(new java.awt.event.ActionListener()
-		{
-			@Override
-			public void actionPerformed(java.awt.event.ActionEvent evt)
-			{
-				currentSubtitle = jTable2.getSelectedRow() + jTable2.getSelectedRowCount() - 1;
-				if (currentSubtitle == -2)
-				{
-					currentSubtitle = jTable2.getRowCount() - 1;
-				}
-
-				AddNewCommand addNew = new AddNewCommand(in, currentSubtitle + 1, jTable2.getSelectionModel());
-				CommandController controller = CommandController.getInstance();
-				controller.executeCommand(addNew);
-			}
-		});
+		newSubAfterButton.addActionListener(this);
 
 		deleteButton.setText("Delete");
-		deleteButton.addActionListener(new java.awt.event.ActionListener()
-		{
-			@Override
-			public void actionPerformed(java.awt.event.ActionEvent evt)
-			{
-				currentSubtitle = jTable2.getSelectedRow();
-				if (currentSubtitle >= 0)
-				{
-					int length = jTable2.getSelectedRowCount();
-
-					DeleteCommand delete = new DeleteCommand(in, currentSubtitle, length);
-					CommandController controller = CommandController.getInstance();
-					controller.executeCommand(delete);
-				}
-			}
-		});
+		deleteButton.addActionListener(this);
 
 		moveUpButton.setText("Move Up");
-		moveUpButton.addActionListener(new java.awt.event.ActionListener()
-		{
-			@Override
-			public void actionPerformed(java.awt.event.ActionEvent evt)
-			{
-				currentSubtitle = jTable2.getSelectedRow();
-				if (currentSubtitle > 0)
-				{
-
-					int length = jTable2.getSelectedRowCount();
-
-					MoveCommand moveUp = new MoveCommand(in, currentSubtitle, length, -1, jTable2.getSelectionModel());
-					CommandController controller = CommandController.getInstance();
-					controller.executeCommand(moveUp);
-				}
-			}
-		});
+		moveUpButton.addActionListener(this);
 
 		moveDownButton.setText("Move Down");
-		moveDownButton.addActionListener(new java.awt.event.ActionListener()
-		{
-			@Override
-			public void actionPerformed(java.awt.event.ActionEvent evt)
-			{
-				currentSubtitle = jTable2.getSelectedRow();
-				int length = jTable2.getSelectedRowCount();
-				if (currentSubtitle >= 0 && currentSubtitle + length < jTable2.getRowCount())
-				{
-
-					MoveCommand moveDown = new MoveCommand(in, currentSubtitle, length, 1, jTable2.getSelectionModel());
-					CommandController controller = CommandController.getInstance();
-					controller.executeCommand(moveDown);
-				}
-			}
-		});
+		moveDownButton.addActionListener(this);
 
 		openButton.setText("Open");
-		openButton.addActionListener(new java.awt.event.ActionListener()
-		{
-			@Override
-			public void actionPerformed(java.awt.event.ActionEvent evt)
-			{
-
-				javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
-				fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter()
-				{
-
-					@Override
-					public boolean accept(File f)
-					{
-						return f.isDirectory() || f.getAbsolutePath().endsWith(".srt") || f.getAbsolutePath().endsWith(".sub");
-					}
-
-					@Override
-					public String getDescription()
-					{
-						return "Subtitle Files (*.srt, *.sub)";
-					}
-				});
-
-				int returnVal = fileChooser.showOpenDialog(null);
-				if (returnVal == JFileChooser.APPROVE_OPTION)
-				{
-					currentFile = fileChooser.getSelectedFile();
-					hasPath = true;
-					setTitle("Subtitle Editor: " + currentFile.getName());
-
-					in = new Subtitles(new ArrayList<SubtitleItem>());
-					open();
-
-					((SubsTableModel) jTable2.getModel()).setSubtitleList(in);
-					CommandController.getInstance().clearCommandHistory();
-				}
-			}
-		});
+		openButton.addActionListener(this);
 
 		saveButton.setText("Save");
-		saveButton.addActionListener(new java.awt.event.ActionListener()
-		{
-			@Override
-			public void actionPerformed(java.awt.event.ActionEvent evt)
-			{
-				if (!isSaved)
-				{
-					save();
-				}
-			}
-		});
-
-		exitButton.setText("Exit");
-		exitButton.addActionListener(new java.awt.event.ActionListener()
-		{
-			@Override
-			public void actionPerformed(java.awt.event.ActionEvent evt)
-			{
-				System.exit(0);
-			}
-		});
+		saveButton.addActionListener(this);
 
 		jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -424,29 +264,7 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		jScrollPane1.setViewportView(TextArea);
 
 		editButton.setText("Edit");
-		editButton.addActionListener(new java.awt.event.ActionListener()
-		{
-			@Override
-			public void actionPerformed(java.awt.event.ActionEvent evt)
-			{
-				String contentType = TextArea.getContentType();
-				if (currentSubtitle <= 0 || currentSubtitle >= in.size())
-				{
-					return;
-				}
-				String text = TextArea.getText();
-				if (contentType.equals("text/html"))
-				{
-					text = in.getSubtitleHTMLFormattedText(currentSubtitle, false);
-				}
-				TextArea.setContentType("text/html");
-
-				UpdateCommand update = new UpdateCommand(in, currentSubtitle, text, startField.getText(), endField.getText(), durationField.getText());
-				CommandController controller = CommandController.getInstance();
-				controller.executeCommand(update);
-
-			}
-		});
+		editButton.addActionListener(this);
 
 		textLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
 		textLabel.setText("Text:");
@@ -523,75 +341,23 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		jPanel1.setLayout(jPanel1Layout);
 
 		timeRadioButton.setText("Time");
-		timeRadioButton.addActionListener(new java.awt.event.ActionListener()
-		{
-			@Override
-			public void actionPerformed(java.awt.event.ActionEvent evt)
-			{
-				if (isFrames)
-				{
-
-					SwitchModeCommand switchToTime = new SwitchModeCommand(in, currentSubtitle, in.getFrameRatePerSecond(), false);
-					CommandController controller = CommandController.getInstance();
-					controller.executeCommand(switchToTime);
-				}
-			}
-		});
+		timeRadioButton.addActionListener(this);
 
 		framesRadioButton.setText("Frames");
-		framesRadioButton.addActionListener(new java.awt.event.ActionListener()
-		{
-			@Override
-			public void actionPerformed(java.awt.event.ActionEvent evt)
-			{
-				if (!isFrames)
-				{
-
-					SwitchModeCommand switchToFrames = new SwitchModeCommand(in, currentSubtitle, in.getFrameRatePerSecond(), true);
-					CommandController controller = CommandController.getInstance();
-					controller.executeCommand(switchToFrames);
-				}
-			}
-		});
+		framesRadioButton.addActionListener(this);
 
 		switchLabel.setText("Switch:");
 
 		FPSLabel.setText("FPS:");
 
 		saveAsButton.setText("Save as");
-		saveAsButton.addActionListener(new java.awt.event.ActionListener()
-		{
-			@Override
-			public void actionPerformed(java.awt.event.ActionEvent evt)
-			{
-				saveAs();
-				CommandController.getInstance().clearCommandHistory();
-			}
-		});
+		saveAsButton.addActionListener(this);
 
 		this.btnUndo = new JButton("Undo");
-		this.btnUndo.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent arg0)
-			{
-
-				CommandController controller = CommandController.getInstance();
-				controller.undoLastCommand();
-			}
-		});
+		this.btnUndo.addActionListener(this);
 
 		this.btnRedo = new JButton("Redo");
-		this.btnRedo.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent arg0)
-			{
-
-				CommandController controller = CommandController.getInstance();
-				controller.redoLastCommand();
-			}
-		});
+		this.btnRedo.addActionListener(this);
 		
 		CommandController.getInstance().registerCommandActionsHandler(this);
 
@@ -599,42 +365,18 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		translateTextField.setText("");
 
 		btnTranslate.setText("Translate");
-		btnTranslate.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent arg0)
-			{
-				if (currentSubtitle >= 0 && in.size() > 0)
-				{
-					int translateDelta = getSubtitleOffsetFromString(translateTextField.getText());
-					TranslateCommand translate = new TranslateCommand(Interface.this, in, currentSubtitle, jTable2.getSelectionModel(), translateDelta);
-					CommandController controller = CommandController.getInstance();
-					controller.executeCommand(translate);
-				}
-			}
-		});
+		btnTranslate.addActionListener(this);
 
 		btnInterpolate.setText("Interpolate");
-		btnInterpolate.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent arg0)
-			{
-				if (currentSubtitle >= 0 && in.size() > 0)
-				{
-					InterpolateCommand interpolate = new InterpolateCommand(in, currentSubtitle, jTable2.getSelectionModel(),
-							getSubtitleOffsetFromString(interpolateStartInterval.getText()), getSubtitleOffsetFromString(interpolateEndInterval.getText()));
-					CommandController controller = CommandController.getInstance();
-					controller.executeCommand(interpolate);
-				}
-			}
-		});
+		btnInterpolate.addActionListener(this);
 
 		interpolateStartInterval = new JTextField();
 		interpolateStartInterval.setText("");
 
 		interpolateEndInterval = new JTextField();
 		interpolateEndInterval.setText("");
+		
+		this.updateControls();
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
 		layout.setHorizontalGroup(layout.createParallelGroup(Alignment.LEADING).addGroup(
@@ -704,8 +446,7 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 																						.addComponent(moveDownButton, Alignment.LEADING,
 																								GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
 																								Short.MAX_VALUE))
-																		.addComponent(exitButton, GroupLayout.PREFERRED_SIZE, 69,
-																				GroupLayout.PREFERRED_SIZE)))
+																		))
 										.addGroup(
 												layout.createSequentialGroup()
 														.addComponent(jPanel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
@@ -784,7 +525,7 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 																				.addComponent(interpolateEndInterval, GroupLayout.PREFERRED_SIZE,
 																						GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 																.addPreferredGap(ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
-																.addComponent(exitButton, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE))
+																)
 												.addComponent(jPanel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
 														GroupLayout.PREFERRED_SIZE)).addContainerGap()));
 		getContentPane().setLayout(layout);
@@ -792,46 +533,9 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		pack();
 	}
 
-	public void manipulateEditPanelValues(String startFieldText, String endFieldText, String durationFieldText, String textAreaText)
-	{
-		startField.setText(startFieldText);
-		endField.setText(endFieldText);
-		durationField.setText(durationFieldText);
-		setTextAreaMode(false);
-	}
-
-	public void manipulateInterpolateValues(String start, String end)
-	{
-		interpolateStartInterval.setText(start);
-		interpolateEndInterval.setText(end);
-	}
-
-	public void manipulateRadioButtonsValues(boolean isTimeSelected, boolean isFramesSelected)
-	{
-		timeRadioButton.setSelected(isTimeSelected);
-		framesRadioButton.setSelected(isFramesSelected);
-	}
-
-	public void manipulateTranslateValues(String translate)
-	{
-		translateTextField.setText(translate);
-	}
-
-	public void notifyJtableDataChanged()
-	{
-		((SubsTableModel) this.jTable2.getModel()).fireTableDataChanged();
-	}
-
 	private void onRowSelected()
 	{
-		if (jTable2.getSelectedRow() >= 0)
-		{
-			currentSubtitle = jTable2.getSelectedRow();
-			startField.setText(in.getStart(currentSubtitle));
-			endField.setText(in.getEnd(currentSubtitle));
-			durationField.setText(in.getDuration(currentSubtitle));
-			setTextAreaMode(false);
-		}
+		this.updateControls();
 	}
 
 	public void open()
@@ -886,12 +590,15 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		{
 			setFPS();
 		}
-		setDefaultValues();
 		isSaved = true;
+		this.updateControls();
 	}
 
 	private void save()
 	{
+		if (isSaved){
+			return;
+		}
 		if (hasPath)
 		{
 			AbstractSubtitlesWriter writer = currentFile.getPath().endsWith(".sub") ? new SubWriter(currentFile, in.getFrameRatePerSecond())
@@ -906,44 +613,9 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		isSaved = true;
 	}
 
-	private void saveAs()
+	private boolean saveAs()
 	{
-		javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
-
-		javax.swing.filechooser.FileFilter filterSRT = new javax.swing.filechooser.FileFilter()
-		{
-
-			@Override
-			public boolean accept(File f)
-			{
-				return f.isDirectory() || f.getAbsolutePath().endsWith(".srt");
-			}
-
-			@Override
-			public String getDescription()
-			{
-				return "SubRip (*.srt)";
-			}
-		};
-
-		javax.swing.filechooser.FileFilter filterSub = new javax.swing.filechooser.FileFilter()
-		{
-
-			@Override
-			public boolean accept(File f)
-			{
-				return f.isDirectory() || f.getAbsolutePath().endsWith(".sub");
-			}
-
-			@Override
-			public String getDescription()
-			{
-				return "MicroDVD (*.sub)";
-			}
-		};
-
-		fileChooser.addChoosableFileFilter(filterSub);
-		fileChooser.addChoosableFileFilter(filterSRT);
+		JFileChooser fileChooser = this.getFileChooser(new String[] {"SubRip (*.srt)", "MicroDVD (*.sub)"} , new String[][] { {".srt"}, {".sub"} });
 
 		int returnVal = fileChooser.showSaveDialog(null);
 		if (returnVal == JFileChooser.APPROVE_OPTION)
@@ -953,34 +625,22 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 			boolean isSRT = currentFile.getPath().endsWith(".srt");
 			if (isSRT == in.isInFrames())
 			{
-				SwitchModeCommand switchMode = new SwitchModeCommand(in, currentSubtitle, in.getFrameRatePerSecond(), !isSRT);
+				SwitchModeCommand switchMode = new SwitchModeCommand(this, in, in.getFrameRatePerSecond(), !isSRT);
 				CommandController controller = CommandController.getInstance();
 				controller.executeCommand(switchMode);
 			}
-			if (fileChooser.getFileFilter() == filterSub && isSRT)
+			if (fileChooser.getFileFilter().getDescription().equals("MicroDVD (*.sub)") && isSRT)
 			{
 				currentFile = new File(currentFile.getAbsolutePath() + ".sub");
 			}
-			if (fileChooser.getFileFilter() == filterSRT && !isSRT)
+			if (fileChooser.getFileFilter().getDescription().equals("SubRip (*.srt)") && !isSRT)
 			{
 				currentFile = new File(currentFile.getAbsolutePath() + ".srt");
 			}
 			save();
 			setTitle("Subtitle Editor: " + currentFile.getName());
 		}
-	}
-
-	private void setDefaultValues()
-	{
-		if (in.size() > 0)
-		{
-			manipulateInterpolateValues(in.getStart(0), in.getStart(in.size() - 1));
-		}
-		else
-		{
-			manipulateInterpolateValues(in.isInFrames() ? "0" : "00:00:00,000", in.isInFrames() ? "0" : "00:00:00,000");
-		}
-		manipulateTranslateValues(in.isInFrames() ? "0" : "00:00:00,000");
+		return returnVal == JFileChooser.APPROVE_OPTION;
 	}
 
 	private void setFPS()
@@ -994,10 +654,10 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 
 	private void setTextAreaMode(boolean edit)
 	{
-		TextArea.setContentType(edit ? "text/plain" : "text/html");
-		if (currentSubtitle >= 0 && currentSubtitle < in.size())
+		if (getStartSelectionIndex() >= 0)
 		{
-			TextArea.setText(in.getSubtitleHTMLFormattedText(currentSubtitle, edit));
+			TextArea.setContentType(edit ? "text/plain" : "text/html");
+			TextArea.setText(in.getSubtitleHTMLFormattedText(getStartSelectionIndex(), edit));
 		}
 	}
 
@@ -1030,30 +690,199 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 	{
 		this.isSaved = false;
 		this.saveButton.setEnabled(!this.isSaved);
-		this.notifyJtableDataChanged();
+		int start = this.getStartSelectionIndex();
+		int end = this.getEndSelectionIndex();
+		((SubsTableModel) this.jTable2.getModel()).fireTableDataChanged();
+		this.setSelection(start, end);
+		this.updateControls();
 	}
-
-	@Override
-	public UIMemento createMemento()
+	
+	private void updateControls()
 	{
-		return new Memento(currentSubtitle, startField.getText(), endField.getText(), durationField.getText(), TextArea.getText(), isSaved, isFrames,
-				TextArea.getContentType());
-	}
+		int selectedIndex = this.getStartSelectionIndex();
+		int endIndex = this.getEndSelectionIndex();
 
-	@Override
-	public void restoreToMemento(UIMemento uiMemento)
-	{
-		Memento memento = (Memento) uiMemento;
+		startField.setText(selectedIndex > 0 ? in.getStart(selectedIndex) : (in.isInFrames() ? "0" : "00:00:00,000"));
+		endField.setText(selectedIndex > 0 ? in.getEnd(selectedIndex) : (in.isInFrames() ? "0" : "00:00:00,000"));
+		durationField.setText(selectedIndex > 0 ? in.getDuration(selectedIndex) : (in.isInFrames() ? "0" : "00:00:00,000"));
+		setTextAreaMode(false);
+
+		interpolateStartInterval.setText(selectedIndex > 0 ? in.getStart(selectedIndex) : (in.isInFrames() ? "0" : "00:00:00,000"));
+		interpolateEndInterval.setText(endIndex > 0 ? in.getStart(endIndex) : (in.isInFrames() ? "0" : "00:00:00,000"));
+
+		this.translateTextField.setText((in.isInFrames() ? "0" : "00:00:00,000"));
+
+		timeRadioButton.setSelected(!in.isInFrames());
+		framesRadioButton.setSelected(in.isInFrames());
+
+		JComponent[] componentsToEnable = new JComponent[]
+		{
+		        this.btnInterpolate, this.btnTranslate, this.deleteButton, this.startField, this.endField,
+		        this.durationField, this.TextArea, this.editButton, this.interpolateStartInterval, this.interpolateEndInterval, this.translateTextField
+		};
+		for (JComponent component : componentsToEnable)
+		{
+			component.setEnabled(selectedIndex >= 0);
+		}
+		this.moveDownButton.setEnabled(selectedIndex >= 0 && endIndex < in.size() - 1);
+		this.moveUpButton.setEnabled(selectedIndex > 0);
 		
-		currentSubtitle = memento.currentSubtitle;
-		startField.setText(memento.startFieldText);
-		endField.setText(memento.endFieldText);
-		durationField.setText(memento.durationFieldText);
-		TextArea.setContentType(memento.textAreaContentType);
-		TextArea.setText(memento.textAreaText);
-		isSaved = memento.isSaved;
-		isFrames = memento.isFrames;
-		timeRadioButton.setSelected(!isFrames);
-		framesRadioButton.setSelected(isFrames);
+		this.timeRadioButton.setEnabled(in.isInFrames());
+		this.framesRadioButton.setEnabled(!in.isInFrames());
+	}
+
+	@Override
+    public int getStartSelectionIndex()
+    {
+		return this.jTable2.getSelectionModel().getMinSelectionIndex();
+    }
+
+	@Override
+    public int getEndSelectionIndex()
+    {
+		return this.jTable2.getSelectionModel().getMaxSelectionIndex();
+    }
+
+	@Override
+	public void setSelection(int start, int end)
+	{
+		if (start == -1)
+		{
+			this.jTable2.getSelectionModel().clearSelection();
+		}
+		else
+		{
+			this.jTable2.getSelectionModel().setSelectionInterval(start, end);
+		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e)
+	{
+		Command command = null;
+		if (e.getSource().equals(newSubBeforeButton))
+		{
+			int index = getStartSelectionIndex() != -1 ? getStartSelectionIndex() : 0;
+			command = new AddNewCommand(this, in, index);
+		}
+		else if (e.getSource().equals(newSubAfterButton))
+		{
+			int index = getEndSelectionIndex();
+			index = index != -1 ? index + 1 : in.size();
+			command = new AddNewCommand(this, in, index);
+		}
+		else if (e.getSource().equals(deleteButton))
+		{
+			command = new DeleteCommand(this, in);
+		}
+		else if (e.getSource().equals(moveUpButton) || e.getSource().equals(moveDownButton))
+		{
+			command = new MoveCommand(this, in, e.getSource().equals(moveUpButton) ? -1 : 1);
+		}
+		else if (e.getSource().equals(openButton))
+		{
+			this.openFile();
+		}
+		else if (e.getSource().equals(saveButton))
+		{
+			this.save();
+		}
+		else if (e.getSource().equals(editButton))
+		{
+			String contentType = TextArea.getContentType();
+			String text = contentType.equals("text/html") ? in.getSubtitleHTMLFormattedText(getStartSelectionIndex(), false) : TextArea.getText();
+			TextArea.setContentType("text/html");
+
+			command = new UpdateCommand(this, in, text, startField.getText(), endField.getText(), durationField.getText());
+		}
+		else if (e.getSource().equals(timeRadioButton) || e.getSource().equals(framesRadioButton))
+		{
+			command = new SwitchModeCommand(this, in, in.getFrameRatePerSecond(), e.getSource().equals(framesRadioButton));
+		}
+		else if (e.getSource().equals(saveAsButton))
+		{
+			if (this.saveAs()){
+				CommandController.getInstance().clearCommandHistory();
+			}
+		}
+		else if (e.getSource().equals(btnUndo))
+		{
+			CommandController.getInstance().undoLastCommand();
+		}
+		else if (e.getSource().equals(btnRedo))
+		{
+			CommandController.getInstance().redoLastCommand();
+		}
+		else if (e.getSource().equals(btnTranslate))
+		{
+			int translateDelta = getSubtitleOffsetFromString(translateTextField.getText());
+			command = new TranslateCommand(this, in, translateDelta);
+		}
+		else if (e.getSource().equals(btnInterpolate))
+		{
+			command = new InterpolateCommand(this, in,
+					getSubtitleOffsetFromString(interpolateStartInterval.getText()), getSubtitleOffsetFromString(interpolateEndInterval.getText()));
+		}
+		
+
+		if (command != null)
+		{
+			CommandController controller = CommandController.getInstance();
+			controller.executeCommand(command);
+		}
+	}
+
+	private JFileChooser getFileChooser(final String[] descriptions, final String[][] filterExtensions)
+	{
+		JFileChooser result = new javax.swing.JFileChooser();
+		for (int i = 0; i < descriptions.length; i++){
+			final String description = descriptions[i];
+			final String[] extensions = filterExtensions[i];
+			result.addChoosableFileFilter(new javax.swing.filechooser.FileFilter()
+			{
+
+				@Override
+				public boolean accept(File f)
+				{
+					if (f.isDirectory())
+					{
+						return true;
+					}
+					for (String extension : extensions)
+					{
+						if (f.getAbsolutePath().endsWith(extension))
+						{
+							return true;
+						}
+					}
+					return false;
+				}
+
+				@Override
+				public String getDescription()
+				{
+					return description;
+				}
+			});
+		}
+		return result;
+	}
+
+	private void openFile()
+	{
+		JFileChooser fileChooser = this.getFileChooser(new String[] {"Subtitle Files (*.srt, *.sub)"}, new String[][] {{ ".srt", ".sub" }});
+		int returnVal = fileChooser.showOpenDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION)
+		{
+			currentFile = fileChooser.getSelectedFile();
+			hasPath = true;
+			setTitle("Subtitle Editor: " + currentFile.getName());
+
+			in = new Subtitles(new ArrayList<SubtitleItem>());
+			open();
+
+			((SubsTableModel) jTable2.getModel()).setSubtitleList(in);
+			CommandController.getInstance().clearCommandHistory();
+		}
 	}
 }

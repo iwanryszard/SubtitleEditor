@@ -1,14 +1,10 @@
 package com.ii.subtitle.editor.commands;
 
-import javax.swing.ListSelectionModel;
-
 import com.ii.subtitle.editor.SubtitleItem;
 import com.ii.subtitle.editor.Subtitles;
 
 public class InterpolateCommand extends AbstractSubtitlesCommand
 {
-	private int subtitleIndex;
-	private ListSelectionModel selModel;
 	private int firstSelIndex;
 	private int secondSelIndex;
 	private int start;
@@ -37,26 +33,14 @@ public class InterpolateCommand extends AbstractSubtitlesCommand
 		}
 	}
 	
-	public InterpolateCommand(Subtitles subtitles, int subtitleIndex, ListSelectionModel selModel, int start, int end)
+	public InterpolateCommand(SelectionModel model, Subtitles subtitles, int start, int end)
 	{
-		super(subtitles);
+		super(model, subtitles);
 		
-		this.subtitleIndex = subtitleIndex;
-		this.selModel = selModel;
 		this.start = start;
 		this.end = end;
-	}
-	
-	@Override
-	protected void executeAfterFireTableDataChanged()
-	{
-		selModel.setSelectionInterval(subtitleIndex, subtitleIndex);
-	}
-	
-	@Override
-	protected void undoAfterFireTableDataChanged()
-	{
-		selModel.setSelectionInterval(firstSelIndex, secondSelIndex);
+		this.firstSelIndex = model.getStartSelectionIndex();
+		this.secondSelIndex = model.getEndSelectionIndex();
 	}
 	
 	@Override
@@ -66,9 +50,6 @@ public class InterpolateCommand extends AbstractSubtitlesCommand
 		{
 			return false;
 		}
-		
-		firstSelIndex = selModel.getAnchorSelectionIndex();
-		secondSelIndex = selModel.getLeadSelectionIndex();
 		
 		if (firstSelIndex >= secondSelIndex || firstSelIndex == -1 || secondSelIndex == -1){
 			return false;
