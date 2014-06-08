@@ -1,13 +1,16 @@
-package com.ii.subtitle.editor;
+package com.ii.subtitle.editor.commands;
+
+import com.ii.subtitle.editor.SubtitleItem;
+import com.ii.subtitle.editor.Subtitles;
 
 public class SwitchModeCommand extends AbstractSubtitlesCommand
 {
-	private int subtitleIndex;
 	private double framesPerSec;
 	private boolean isInFrames;
 	private Subtitles.SavedState savedState;
-	
-	private void switchMode(){
+
+	private void switchMode()
+	{
 		this.subtitles.setInFrames(this.isInFrames);
 		this.subtitles.setFrameRatePerSecond(framesPerSec);
 		double factor = this.isInFrames ? (framesPerSec / 1000) : (1000 / framesPerSec);
@@ -20,11 +23,9 @@ public class SwitchModeCommand extends AbstractSubtitlesCommand
 		}
 	}
 
-	public SwitchModeCommand(Interface interf, Subtitles subtitles, int subtitleIndex, double framesPerSec, boolean isFrames)
+	public SwitchModeCommand(Subtitles subtitles, int subtitleIndex, double framesPerSec, boolean isFrames)
 	{
-		super(interf, subtitles);
-
-		this.subtitleIndex = subtitleIndex;
+		super(subtitles);
 		this.framesPerSec = framesPerSec;
 		this.isInFrames = isFrames;
 	}
@@ -32,20 +33,13 @@ public class SwitchModeCommand extends AbstractSubtitlesCommand
 	@Override
 	protected boolean internalExecute()
 	{
-		if (this.subtitles.size() == 0 || this.subtitles.isInFrames() == this.isInFrames){
+		if (this.subtitles.size() == 0 || this.subtitles.isInFrames() == this.isInFrames)
+		{
 			return false;
 		}
-		
+
 		this.savedState = this.subtitles.createSavedState();
 		this.switchMode();
-		interf.isFrames = this.isInFrames;
-
-		interf.manipulateRadioButtonsValues(false, true);
-		if (subtitleIndex >= 0 && subtitleIndex < subtitles.size())
-		{
-			interf.manipulateEditPanelValues(subtitles.getStart(subtitleIndex), subtitles.getEnd(subtitleIndex),
-					subtitles.getDuration(subtitleIndex), subtitles.getSubtitleHTMLFormattedText(subtitleIndex, false));
-		}
 		return true;
 	}
 

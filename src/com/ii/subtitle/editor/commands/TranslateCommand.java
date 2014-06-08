@@ -1,6 +1,10 @@
-package com.ii.subtitle.editor;
+package com.ii.subtitle.editor.commands;
 
 import javax.swing.ListSelectionModel;
+
+import com.ii.subtitle.editor.Interface;
+import com.ii.subtitle.editor.SubtitleItem;
+import com.ii.subtitle.editor.Subtitles;
 
 public class TranslateCommand extends AbstractSubtitlesCommand
 {
@@ -12,7 +16,7 @@ public class TranslateCommand extends AbstractSubtitlesCommand
 	
 	public TranslateCommand(Interface interf, Subtitles subtitles, int subtitleIndex, ListSelectionModel selModel, int translate)
 	{
-		super(interf, subtitles);
+		super(subtitles);
 		
 		this.subtitleIndex = subtitleIndex;
 		this.selModel = selModel;
@@ -48,7 +52,6 @@ public class TranslateCommand extends AbstractSubtitlesCommand
 	protected boolean internalExecute()
 	{
 		this.executeTranslate(this.translate);
-		interf.manipulateEditPanelValues(subtitles.getStart(subtitleIndex), subtitles.getEnd(subtitleIndex), subtitles.getDuration(subtitleIndex), subtitles.getSubtitleHTMLFormattedText(subtitleIndex, false));
 		return true;
 	}
 

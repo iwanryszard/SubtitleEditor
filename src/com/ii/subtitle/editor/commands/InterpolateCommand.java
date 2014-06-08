@@ -1,6 +1,9 @@
-package com.ii.subtitle.editor;
+package com.ii.subtitle.editor.commands;
 
 import javax.swing.ListSelectionModel;
+
+import com.ii.subtitle.editor.SubtitleItem;
+import com.ii.subtitle.editor.Subtitles;
 
 public class InterpolateCommand extends AbstractSubtitlesCommand
 {
@@ -34,9 +37,9 @@ public class InterpolateCommand extends AbstractSubtitlesCommand
 		}
 	}
 	
-	public InterpolateCommand(Interface interf, Subtitles subtitles, int subtitleIndex, ListSelectionModel selModel, int start, int end)
+	public InterpolateCommand(Subtitles subtitles, int subtitleIndex, ListSelectionModel selModel, int start, int end)
 	{
-		super(interf, subtitles);
+		super(subtitles);
 		
 		this.subtitleIndex = subtitleIndex;
 		this.selModel = selModel;
@@ -73,8 +76,6 @@ public class InterpolateCommand extends AbstractSubtitlesCommand
 		
 		this.savedState = this.subtitles.createSavedState();
 		this.interpolate(start, firstSelIndex, end, secondSelIndex);
-		interf.manipulateInterpolateValues(subtitles.getStart(firstSelIndex), subtitles.getStart(secondSelIndex));
-		interf.manipulateEditPanelValues(subtitles.getStart(subtitleIndex), subtitles.getEnd(subtitleIndex), subtitles.getDuration(subtitleIndex), subtitles.getSubtitleHTMLFormattedText(subtitleIndex, false));
 		return true;
 	}
 

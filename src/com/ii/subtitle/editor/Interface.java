@@ -27,13 +27,23 @@ import javax.swing.JFileChooser;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 import com.ii.subtitle.editor.SubtitlesParser.WrongFormatException;
+import com.ii.subtitle.editor.commands.AddNewCommand;
+import com.ii.subtitle.editor.commands.CommandController;
+import com.ii.subtitle.editor.commands.DeleteCommand;
+import com.ii.subtitle.editor.commands.InterpolateCommand;
+import com.ii.subtitle.editor.commands.MoveCommand;
+import com.ii.subtitle.editor.commands.SwitchModeCommand;
+import com.ii.subtitle.editor.commands.TranslateCommand;
+import com.ii.subtitle.editor.commands.UpdateCommand;
+import com.ii.subtitle.editor.commands.CommandController.CommandActionsHandler;
+import com.ii.subtitle.editor.commands.CommandController.UIMemento;
 
 import javax.swing.JTextField;
 
-public class Interface extends javax.swing.JFrame
+public class Interface extends javax.swing.JFrame implements CommandActionsHandler
 {
 
-	public static class Memento
+	public static class Memento implements UIMemento
 	{
 		private int currentSubtitle;
 		private String startFieldText;
@@ -119,6 +129,9 @@ public class Interface extends javax.swing.JFrame
 	private JTextField translateTextField;
 	private JTextField interpolateStartInterval;
 	private JTextField interpolateEndInterval;
+	
+	private JButton btnUndo;
+	private JButton btnRedo;
 
 	public Interface()
 	{
@@ -241,8 +254,8 @@ public class Interface extends javax.swing.JFrame
 					currentSubtitle = 0;
 				}
 
-				AddNewCommand addNew = new AddNewCommand(Interface.this, in, currentSubtitle, jTable2.getSelectionModel());
-				CommandController controller = CommandController.getCommandController();
+				AddNewCommand addNew = new AddNewCommand(in, currentSubtitle, jTable2.getSelectionModel());
+				CommandController controller = CommandController.getInstance();
 				controller.executeCommand(addNew);
 			}
 		});
@@ -259,8 +272,8 @@ public class Interface extends javax.swing.JFrame
 					currentSubtitle = jTable2.getRowCount() - 1;
 				}
 
-				AddNewCommand addNew = new AddNewCommand(Interface.this, in, currentSubtitle + 1, jTable2.getSelectionModel());
-				CommandController controller = CommandController.getCommandController();
+				AddNewCommand addNew = new AddNewCommand(in, currentSubtitle + 1, jTable2.getSelectionModel());
+				CommandController controller = CommandController.getInstance();
 				controller.executeCommand(addNew);
 			}
 		});
@@ -276,8 +289,8 @@ public class Interface extends javax.swing.JFrame
 				{
 					int length = jTable2.getSelectedRowCount();
 
-					DeleteCommand delete = new DeleteCommand(Interface.this, in, currentSubtitle, length);
-					CommandController controller = CommandController.getCommandController();
+					DeleteCommand delete = new DeleteCommand(in, currentSubtitle, length);
+					CommandController controller = CommandController.getInstance();
 					controller.executeCommand(delete);
 				}
 			}
@@ -295,8 +308,8 @@ public class Interface extends javax.swing.JFrame
 
 					int length = jTable2.getSelectedRowCount();
 
-					MoveCommand moveUp = new MoveCommand(Interface.this, in, currentSubtitle, length, -1, jTable2.getSelectionModel());
-					CommandController controller = CommandController.getCommandController();
+					MoveCommand moveUp = new MoveCommand(in, currentSubtitle, length, -1, jTable2.getSelectionModel());
+					CommandController controller = CommandController.getInstance();
 					controller.executeCommand(moveUp);
 				}
 			}
@@ -313,8 +326,8 @@ public class Interface extends javax.swing.JFrame
 				if (currentSubtitle >= 0 && currentSubtitle + length < jTable2.getRowCount())
 				{
 
-					MoveCommand moveDown = new MoveCommand(Interface.this, in, currentSubtitle, length, 1, jTable2.getSelectionModel());
-					CommandController controller = CommandController.getCommandController();
+					MoveCommand moveDown = new MoveCommand(in, currentSubtitle, length, 1, jTable2.getSelectionModel());
+					CommandController controller = CommandController.getInstance();
 					controller.executeCommand(moveDown);
 				}
 			}
@@ -355,7 +368,7 @@ public class Interface extends javax.swing.JFrame
 					open();
 
 					((SubsTableModel) jTable2.getModel()).setSubtitleList(in);
-					CommandController.getCommandController().clearCommandHistory();
+					CommandController.getInstance().clearCommandHistory();
 				}
 			}
 		});
@@ -428,9 +441,8 @@ public class Interface extends javax.swing.JFrame
 				}
 				TextArea.setContentType("text/html");
 
-				UpdateCommand update = new UpdateCommand(Interface.this, in, currentSubtitle, text, startField.getText(), endField.getText(),
-						durationField.getText());
-				CommandController controller = CommandController.getCommandController();
+				UpdateCommand update = new UpdateCommand(in, currentSubtitle, text, startField.getText(), endField.getText(), durationField.getText());
+				CommandController controller = CommandController.getInstance();
 				controller.executeCommand(update);
 
 			}
@@ -519,8 +531,8 @@ public class Interface extends javax.swing.JFrame
 				if (isFrames)
 				{
 
-					SwitchModeCommand switchToTime = new SwitchModeCommand(Interface.this, in, currentSubtitle, in.getFrameRatePerSecond(), false);
-					CommandController controller = CommandController.getCommandController();
+					SwitchModeCommand switchToTime = new SwitchModeCommand(in, currentSubtitle, in.getFrameRatePerSecond(), false);
+					CommandController controller = CommandController.getInstance();
 					controller.executeCommand(switchToTime);
 				}
 			}
@@ -535,8 +547,8 @@ public class Interface extends javax.swing.JFrame
 				if (!isFrames)
 				{
 
-					SwitchModeCommand switchToFrames = new SwitchModeCommand(Interface.this, in, currentSubtitle, in.getFrameRatePerSecond(), true);
-					CommandController controller = CommandController.getCommandController();
+					SwitchModeCommand switchToFrames = new SwitchModeCommand(in, currentSubtitle, in.getFrameRatePerSecond(), true);
+					CommandController controller = CommandController.getInstance();
 					controller.executeCommand(switchToFrames);
 				}
 			}
@@ -553,35 +565,35 @@ public class Interface extends javax.swing.JFrame
 			public void actionPerformed(java.awt.event.ActionEvent evt)
 			{
 				saveAs();
-				CommandController.getCommandController().clearCommandHistory();
+				CommandController.getInstance().clearCommandHistory();
 			}
 		});
 
-		JButton btnUndo = new JButton("Undo");
-		CommandController.getCommandController().registerUndoButton(btnUndo);
-		btnUndo.addActionListener(new ActionListener()
+		this.btnUndo = new JButton("Undo");
+		this.btnUndo.addActionListener(new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent arg0)
 			{
 
-				CommandController controller = CommandController.getCommandController();
+				CommandController controller = CommandController.getInstance();
 				controller.undoLastCommand();
 			}
 		});
 
-		JButton btnRedo = new JButton("Redo");
-		CommandController.getCommandController().registerRedoButton(btnRedo);
-		btnRedo.addActionListener(new ActionListener()
+		this.btnRedo = new JButton("Redo");
+		this.btnRedo.addActionListener(new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent arg0)
 			{
 
-				CommandController controller = CommandController.getCommandController();
+				CommandController controller = CommandController.getInstance();
 				controller.redoLastCommand();
 			}
 		});
+		
+		CommandController.getInstance().registerCommandActionsHandler(this);
 
 		translateTextField = new JTextField();
 		translateTextField.setText("");
@@ -596,7 +608,7 @@ public class Interface extends javax.swing.JFrame
 				{
 					int translateDelta = getSubtitleOffsetFromString(translateTextField.getText());
 					TranslateCommand translate = new TranslateCommand(Interface.this, in, currentSubtitle, jTable2.getSelectionModel(), translateDelta);
-					CommandController controller = CommandController.getCommandController();
+					CommandController controller = CommandController.getInstance();
 					controller.executeCommand(translate);
 				}
 			}
@@ -610,9 +622,9 @@ public class Interface extends javax.swing.JFrame
 			{
 				if (currentSubtitle >= 0 && in.size() > 0)
 				{
-					InterpolateCommand interpolate = new InterpolateCommand(Interface.this, in, currentSubtitle, jTable2.getSelectionModel(),
+					InterpolateCommand interpolate = new InterpolateCommand(in, currentSubtitle, jTable2.getSelectionModel(),
 							getSubtitleOffsetFromString(interpolateStartInterval.getText()), getSubtitleOffsetFromString(interpolateEndInterval.getText()));
-					CommandController controller = CommandController.getCommandController();
+					CommandController controller = CommandController.getInstance();
 					controller.executeCommand(interpolate);
 				}
 			}
@@ -878,20 +890,6 @@ public class Interface extends javax.swing.JFrame
 		isSaved = true;
 	}
 
-	public void restoreFromMemento(Memento memento)
-	{
-		currentSubtitle = memento.currentSubtitle;
-		startField.setText(memento.startFieldText);
-		endField.setText(memento.endFieldText);
-		durationField.setText(memento.durationFieldText);
-		TextArea.setContentType(memento.textAreaContentType);
-		TextArea.setText(memento.textAreaText);
-		isSaved = memento.isSaved;
-		isFrames = memento.isFrames;
-		timeRadioButton.setSelected(!isFrames);
-		framesRadioButton.setSelected(isFrames);
-	}
-
 	private void save()
 	{
 		if (hasPath)
@@ -955,8 +953,8 @@ public class Interface extends javax.swing.JFrame
 			boolean isSRT = currentFile.getPath().endsWith(".srt");
 			if (isSRT == in.isInFrames())
 			{
-				SwitchModeCommand switchMode = new SwitchModeCommand(Interface.this, in, currentSubtitle, in.getFrameRatePerSecond(), !isSRT);
-				CommandController controller = CommandController.getCommandController();
+				SwitchModeCommand switchMode = new SwitchModeCommand(in, currentSubtitle, in.getFrameRatePerSecond(), !isSRT);
+				CommandController controller = CommandController.getInstance();
 				controller.executeCommand(switchMode);
 			}
 			if (fileChooser.getFileFilter() == filterSub && isSRT)
@@ -970,12 +968,6 @@ public class Interface extends javax.swing.JFrame
 			save();
 			setTitle("Subtitle Editor: " + currentFile.getName());
 		}
-	}
-
-	public Memento saveToMemento()
-	{
-		return new Memento(currentSubtitle, startField.getText(), endField.getText(), durationField.getText(), TextArea.getText(), isSaved, isFrames,
-				TextArea.getContentType());
 	}
 
 	private void setDefaultValues()
@@ -1024,5 +1016,44 @@ public class Interface extends javax.swing.JFrame
 			result = !negative ? result : -result;
 		}
 		return result;
+	}
+
+	@Override
+	public void updateActionsEnabledState(boolean undoEnabled, boolean redoEnabled)
+	{
+		this.btnUndo.setEnabled(undoEnabled);
+		this.btnRedo.setEnabled(redoEnabled);
+	}
+
+	@Override
+	public void notifyChanged()
+	{
+		this.isSaved = false;
+		this.saveButton.setEnabled(!this.isSaved);
+		this.notifyJtableDataChanged();
+	}
+
+	@Override
+	public UIMemento createMemento()
+	{
+		return new Memento(currentSubtitle, startField.getText(), endField.getText(), durationField.getText(), TextArea.getText(), isSaved, isFrames,
+				TextArea.getContentType());
+	}
+
+	@Override
+	public void restoreToMemento(UIMemento uiMemento)
+	{
+		Memento memento = (Memento) uiMemento;
+		
+		currentSubtitle = memento.currentSubtitle;
+		startField.setText(memento.startFieldText);
+		endField.setText(memento.endFieldText);
+		durationField.setText(memento.durationFieldText);
+		TextArea.setContentType(memento.textAreaContentType);
+		TextArea.setText(memento.textAreaText);
+		isSaved = memento.isSaved;
+		isFrames = memento.isFrames;
+		timeRadioButton.setSelected(!isFrames);
+		framesRadioButton.setSelected(isFrames);
 	}
 }

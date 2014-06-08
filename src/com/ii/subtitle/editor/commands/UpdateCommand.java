@@ -1,5 +1,8 @@
-package com.ii.subtitle.editor;
+package com.ii.subtitle.editor.commands;
 
+import com.ii.subtitle.editor.SubtitleItem;
+import com.ii.subtitle.editor.Subtitles;
+import com.ii.subtitle.editor.UserInputSubtitleParser;
 import com.ii.subtitle.editor.SubtitlesParser.WrongFormatException;
 
 public class UpdateCommand extends AbstractSubtitlesCommand
@@ -11,9 +14,9 @@ public class UpdateCommand extends AbstractSubtitlesCommand
 	private String duration;
 	private SubtitleItem oldSubtitle;
 
-	public UpdateCommand(Interface interf, Subtitles subtitles, int index, String text, String start, String end, String duration)
+	public UpdateCommand(Subtitles subtitles, int index, String text, String start, String end, String duration)
 	{
-		super(interf, subtitles);
+		super(subtitles);
 		this.subtitleIndex = index;
 		this.text = text;
 		this.start = start;
@@ -32,7 +35,6 @@ public class UpdateCommand extends AbstractSubtitlesCommand
 			if(parser.getSubtitle() != null)
 			{
 				this.oldSubtitle = subtitles.set(subtitleIndex, parser.getSubtitle());
-				interf.manipulateEditPanelValues(subtitles.getStart(subtitleIndex), subtitles.getEnd(subtitleIndex), subtitles.getDuration(subtitleIndex), subtitles.getSubtitleHTMLFormattedText(subtitleIndex, false));
 				return true;
 			}
 		}

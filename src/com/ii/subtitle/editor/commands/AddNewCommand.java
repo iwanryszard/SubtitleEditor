@@ -1,6 +1,10 @@
-package com.ii.subtitle.editor;
+package com.ii.subtitle.editor.commands;
 
 import javax.swing.ListSelectionModel;
+
+import com.ii.subtitle.editor.SubtitleItem;
+import com.ii.subtitle.editor.Subtitles;
+import com.ii.subtitle.editor.TextLeaf;
 
 public class AddNewCommand extends AbstractSubtitlesCommand
 {
@@ -9,10 +13,9 @@ public class AddNewCommand extends AbstractSubtitlesCommand
 	private int firstSelIndex;
 	private int secondSelIndex;
 	
-	public AddNewCommand(Interface interf, Subtitles subtitles, int subtitleIndex, ListSelectionModel selModel)
+	public AddNewCommand(Subtitles subtitles, int subtitleIndex, ListSelectionModel selModel)
 	{
-		super(interf, subtitles);
-		
+		super(subtitles);
 		this.subtitleIndex = subtitleIndex;
 		this.selModel = selModel;
 	}
@@ -36,8 +39,6 @@ public class AddNewCommand extends AbstractSubtitlesCommand
 		
 		firstSelIndex = selModel.getAnchorSelectionIndex();
 		secondSelIndex = selModel.getLeadSelectionIndex();
-
-		interf.manipulateEditPanelValues(subtitles.getStart(subtitleIndex), subtitles.getEnd(subtitleIndex), subtitles.getDuration(subtitleIndex), subtitles.getSubtitleHTMLFormattedText(subtitleIndex, false));
 		return true;
 	}
 
