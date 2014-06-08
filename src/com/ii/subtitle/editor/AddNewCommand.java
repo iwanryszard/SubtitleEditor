@@ -32,8 +32,7 @@ public class AddNewCommand extends AbstractSubtitlesCommand
 	@Override
 	protected boolean internalExecute()
 	{
-		
-		subtitles.insertNewSubtitle(subtitleIndex);
+		subtitles.add(subtitleIndex,  new SubtitleItem(0, 0,  new TextLeaf("")));
 		
 		firstSelIndex = selModel.getAnchorSelectionIndex();
 		secondSelIndex = selModel.getLeadSelectionIndex();
@@ -45,6 +44,7 @@ public class AddNewCommand extends AbstractSubtitlesCommand
 	@Override
 	protected boolean internalUndo()
 	{
+		subtitles.remove(subtitleIndex);
 		return true;
 	}
 

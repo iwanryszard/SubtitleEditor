@@ -1,10 +1,14 @@
 package com.ii.subtitle.editor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class DeleteCommand extends AbstractSubtitlesCommand
 {
 	private int startSubtitle;
 	private int selectedCount;
+	private List<SubtitleItem> removedItems;
 	
 	public DeleteCommand(Interface interf, Subtitles subtitles, int startSubtitle, int selectedCount)
 	{
@@ -17,7 +21,9 @@ public class DeleteCommand extends AbstractSubtitlesCommand
 	@Override
 	protected boolean internalExecute()
 	{
-		subtitles.removeInRange(startSubtitle, selectedCount);
+		List<SubtitleItem> range = subtitles.subList(startSubtitle, startSubtitle + selectedCount);
+		removedItems = new ArrayList<>(range);
+		range.clear();
 		interf.manipulateEditPanelValues("", "", "", "");
 		return true;
 	}
@@ -25,6 +31,7 @@ public class DeleteCommand extends AbstractSubtitlesCommand
 	@Override
 	protected boolean internalUndo()
 	{
+		subtitles.addAll(startSubtitle, removedItems);
 		return true;
 	}
 }

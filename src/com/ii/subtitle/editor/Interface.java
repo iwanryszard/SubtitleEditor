@@ -27,6 +27,7 @@ import javax.swing.JFileChooser;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 import com.ii.subtitle.editor.SubtitlesParser.WrongFormatException;
+
 import javax.swing.JTextField;
 
 public class Interface extends javax.swing.JFrame
@@ -294,7 +295,7 @@ public class Interface extends javax.swing.JFrame
 
 					int length = jTable2.getSelectedRowCount();
 
-					MoveUpCommand moveUp = new MoveUpCommand(Interface.this, in, currentSubtitle, length, jTable2.getSelectionModel());
+					MoveCommand moveUp = new MoveCommand(Interface.this, in, currentSubtitle, length, -1, jTable2.getSelectionModel());
 					CommandController controller = CommandController.getCommandController();
 					controller.executeCommand(moveUp);
 				}
@@ -312,7 +313,7 @@ public class Interface extends javax.swing.JFrame
 				if (currentSubtitle >= 0 && currentSubtitle + length < jTable2.getRowCount())
 				{
 
-					MoveDownCommand moveDown = new MoveDownCommand(Interface.this, in, currentSubtitle, length, jTable2.getSelectionModel());
+					MoveCommand moveDown = new MoveCommand(Interface.this, in, currentSubtitle, length, 1, jTable2.getSelectionModel());
 					CommandController controller = CommandController.getCommandController();
 					controller.executeCommand(moveDown);
 				}
@@ -416,7 +417,7 @@ public class Interface extends javax.swing.JFrame
 			public void actionPerformed(java.awt.event.ActionEvent evt)
 			{
 				String contentType = TextArea.getContentType();
-				if (currentSubtitle <= 0 || currentSubtitle >= in.getCount())
+				if (currentSubtitle <= 0 || currentSubtitle >= in.size())
 				{
 					return;
 				}
@@ -518,7 +519,7 @@ public class Interface extends javax.swing.JFrame
 				if (isFrames)
 				{
 
-					SwitchToTimeCommand switchToTime = new SwitchToTimeCommand(Interface.this, in, currentSubtitle, in.getFrameRatePerSecond());
+					SwitchModeCommand switchToTime = new SwitchModeCommand(Interface.this, in, currentSubtitle, in.getFrameRatePerSecond(), false);
 					CommandController controller = CommandController.getCommandController();
 					controller.executeCommand(switchToTime);
 				}
@@ -534,7 +535,7 @@ public class Interface extends javax.swing.JFrame
 				if (!isFrames)
 				{
 
-					SwitchToFramesCommand switchToFrames = new SwitchToFramesCommand(Interface.this, in, currentSubtitle, in.getFrameRatePerSecond());
+					SwitchModeCommand switchToFrames = new SwitchModeCommand(Interface.this, in, currentSubtitle, in.getFrameRatePerSecond(), true);
 					CommandController controller = CommandController.getCommandController();
 					controller.executeCommand(switchToFrames);
 				}
@@ -591,10 +592,10 @@ public class Interface extends javax.swing.JFrame
 			@Override
 			public void actionPerformed(ActionEvent arg0)
 			{
-				if (currentSubtitle >= 0 && in.getCount() > 0)
+				if (currentSubtitle >= 0 && in.size() > 0)
 				{
-					TranslateCommand translate = new TranslateCommand(Interface.this, in, currentSubtitle, jTable2.getSelectionModel(),
-							translateTextField.getText());
+					int translateDelta = getSubtitleOffsetFromString(translateTextField.getText());
+					TranslateCommand translate = new TranslateCommand(Interface.this, in, currentSubtitle, jTable2.getSelectionModel(), translateDelta);
 					CommandController controller = CommandController.getCommandController();
 					controller.executeCommand(translate);
 				}
@@ -607,10 +608,10 @@ public class Interface extends javax.swing.JFrame
 			@Override
 			public void actionPerformed(ActionEvent arg0)
 			{
-				if (currentSubtitle >= 0 && in.getCount() > 0)
+				if (currentSubtitle >= 0 && in.size() > 0)
 				{
 					InterpolateCommand interpolate = new InterpolateCommand(Interface.this, in, currentSubtitle, jTable2.getSelectionModel(),
-							interpolateStartInterval.getText(), interpolateEndInterval.getText());
+							getSubtitleOffsetFromString(interpolateStartInterval.getText()), getSubtitleOffsetFromString(interpolateEndInterval.getText()));
 					CommandController controller = CommandController.getCommandController();
 					controller.executeCommand(interpolate);
 				}
@@ -897,7 +898,7 @@ public class Interface extends javax.swing.JFrame
 		{
 			AbstractSubtitlesWriter writer = currentFile.getPath().endsWith(".sub") ? new SubWriter(currentFile, in.getFrameRatePerSecond())
 					: new SrtWriter(currentFile);
-			SubtitlesWriteDirector direcotr = new SubtitlesWriteDirector(in.getSubtitles(), writer);
+			SubtitlesWriteDirector direcotr = new SubtitlesWriteDirector(in, writer);
 			direcotr.write();
 		}
 		else
@@ -952,17 +953,11 @@ public class Interface extends javax.swing.JFrame
 			currentFile = fileChooser.getSelectedFile();
 			hasPath = true;
 			boolean isSRT = currentFile.getPath().endsWith(".srt");
-			if (isSRT && in.isInFrames())
+			if (isSRT == in.isInFrames())
 			{
-				SwitchToTimeCommand switchToTime = new SwitchToTimeCommand(Interface.this, in, currentSubtitle, in.getFrameRatePerSecond());
+				SwitchModeCommand switchMode = new SwitchModeCommand(Interface.this, in, currentSubtitle, in.getFrameRatePerSecond(), !isSRT);
 				CommandController controller = CommandController.getCommandController();
-				controller.executeCommand(switchToTime);
-			}
-			if (!isSRT && !in.isInFrames())
-			{
-				SwitchToFramesCommand switchToFrames = new SwitchToFramesCommand(Interface.this, in, currentSubtitle, in.getFrameRatePerSecond());
-				CommandController controller = CommandController.getCommandController();
-				controller.executeCommand(switchToFrames);
+				controller.executeCommand(switchMode);
 			}
 			if (fileChooser.getFileFilter() == filterSub && isSRT)
 			{
@@ -985,9 +980,9 @@ public class Interface extends javax.swing.JFrame
 
 	private void setDefaultValues()
 	{
-		if (in.getCount() > 0)
+		if (in.size() > 0)
 		{
-			manipulateInterpolateValues(in.getStart(0), in.getStart(in.getCount() - 1));
+			manipulateInterpolateValues(in.getStart(0), in.getStart(in.size() - 1));
 		}
 		else
 		{
@@ -998,41 +993,36 @@ public class Interface extends javax.swing.JFrame
 
 	private void setFPS()
 	{
-		switch (FPSComboBox.getSelectedIndex())
+		float[] framesPerSecondChoices = {15, 20, 23.976f, 23.978f, 24, 25, 29.97f, 30};
+		if (FPSComboBox.getSelectedIndex() > 0)
 		{
-		case 0:
-			in.setFrameRatePerSecond(15);
-			break;
-		case 1:
-			in.setFrameRatePerSecond(20);
-			break;
-		case 2:
-			in.setFrameRatePerSecond(23.976);
-			break;
-		case 3:
-			in.setFrameRatePerSecond(23.978);
-			break;
-		case 4:
-			in.setFrameRatePerSecond(24);
-			break;
-		case 5:
-			in.setFrameRatePerSecond(25);
-			break;
-		case 6:
-			in.setFrameRatePerSecond(29.97);
-			break;
-		case 7:
-			in.setFrameRatePerSecond(30);
-			break;
+			in.setFrameRatePerSecond(framesPerSecondChoices[FPSComboBox.getSelectedIndex()]);
 		}
 	}
 
 	private void setTextAreaMode(boolean edit)
 	{
 		TextArea.setContentType(edit ? "text/plain" : "text/html");
-		if (currentSubtitle >= 0 && currentSubtitle < in.getCount())
+		if (currentSubtitle >= 0 && currentSubtitle < in.size())
 		{
 			TextArea.setText(in.getSubtitleHTMLFormattedText(currentSubtitle, edit));
 		}
+	}
+
+	private int getSubtitleOffsetFromString(String offsetString) {
+		offsetString = offsetString.trim();
+		int result;
+		if(isFrames)
+		{
+			result = Integer.parseInt(offsetString);
+		}
+		else
+		{
+			boolean negative = offsetString.startsWith("-");
+			offsetString = negative ? offsetString.substring(1) : offsetString;
+			result = SrtParser.getTime(offsetString);
+			result = !negative ? result : -result;
+		}
+		return result;
 	}
 }

@@ -1,9 +1,8 @@
 package com.ii.subtitle.editor;
 
-public abstract class AbstractSubtitlesCommand extends BaseCommand
+public abstract class AbstractSubtitlesCommand implements Command
 {
 	protected Subtitles subtitles;
-	protected Subtitles.SavedState subsSavedState;
 	protected Interface interf;
 	protected Interface.Memento memento;
 	
@@ -31,7 +30,6 @@ public abstract class AbstractSubtitlesCommand extends BaseCommand
 	public boolean execute()
 	{
 		memento = interf.saveToMemento();
-		subsSavedState = subtitles.createSavedState();
 		interf.isSaved = false;
 		
 		boolean result = internalExecute();
@@ -48,7 +46,6 @@ public abstract class AbstractSubtitlesCommand extends BaseCommand
 		boolean result = internalUndo();
 		
 		interf.restoreFromMemento(memento);
-		subtitles.restoreToState(subsSavedState);
 		interf.notifyJtableDataChanged();
 		
 		undoAfterFireTableDataChanged();
