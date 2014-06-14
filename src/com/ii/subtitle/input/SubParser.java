@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.ii.subtitle.model.SubtitleFormat;
 import com.ii.subtitle.model.SubtitleItem;
 import com.ii.subtitle.model.SubtitleText;
 import com.ii.subtitle.model.Subtitles;
@@ -16,8 +17,13 @@ public class SubParser extends SubtitlesParser
 
 	private static final Pattern TEXT_STYLE_PATTERN = Pattern.compile("\\{[Yy]:(b?i?u?)\\}");
 	private static final Pattern FRAMES_PATTERN = Pattern.compile("\\{(\\d++)\\}\\{(\\d++)\\}");
+	
+	public static SubtitlesParser createParser(String content)
+	{
+		return new SubParser(content);
+	}
 
-	public SubParser(String content)
+	private SubParser(String content)
 	{
 		super(content);
 	}
@@ -50,7 +56,7 @@ public class SubParser extends SubtitlesParser
 			subList.add(item);
 		}
 
-		this.setSubtitles(new Subtitles(subList, framesPerSecond));
+		this.setSubtitles(new Subtitles(subList, SubtitleFormat.MICRODVD, framesPerSecond));
 	}
 
 	private SubtitleText getText(String subtitleString)

@@ -2,8 +2,6 @@ package com.ii.subtitle.model;
 
 import java.util.ArrayList;
 
-import com.ii.subtitle.model.SubtitleText.Type;
-
 public class TextGroup extends SubtitleText
 {
 	private final ArrayList<SubtitleText> children;

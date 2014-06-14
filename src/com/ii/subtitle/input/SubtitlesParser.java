@@ -20,7 +20,17 @@ public abstract class SubtitlesParser
 
 	}
 
-	public SubtitlesParser(String content)
+	public static SubtitlesParser createParser(String content)
+	{
+		return null;
+	}
+
+	protected SubtitlesParser(String content)
+	{
+		this.setContent(content);
+	}
+
+	protected final void setContent(String content)
 	{
 		if (content == null)
 		{
@@ -33,12 +43,12 @@ public abstract class SubtitlesParser
 	{
 		return this.content;
 	}
-	
+
 	protected void setSubtitles(Subtitles subtitles)
 	{
 		this.subtitles = subtitles;
 	}
-	
+
 	public Subtitles getSubtitles()
 	{
 		return this.subtitles;

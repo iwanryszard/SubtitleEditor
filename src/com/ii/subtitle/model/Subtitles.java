@@ -26,20 +26,21 @@ public class Subtitles extends ArrayList<SubtitleItem>
 		}
 	}
 	
+	private SubtitleFormat format;
 	private double frameRatePerSecond;
 	private boolean isFrames;
 
-	public Subtitles(List<SubtitleItem> subtitles)
+	public Subtitles(List<SubtitleItem> subtitles, SubtitleFormat format)
 	{
-		this(subtitles, -1);
-		isFrames = false;
+		this(subtitles, format, -1);
 	}
 
-	public Subtitles(List<SubtitleItem> subtitles, double frameRatePerSecond)
+	public Subtitles(List<SubtitleItem> subtitles, SubtitleFormat format, double frameRatePerSecond)
 	{
 		this.addAll(subtitles);
+		this.format = format;
 		this.frameRatePerSecond = frameRatePerSecond;
-		this.isFrames = true;
+		this.isFrames = frameRatePerSecond > 0;
 	}
 	
 	public SavedState createSavedState()
@@ -116,6 +117,16 @@ public class Subtitles extends ArrayList<SubtitleItem>
 		return getFormatedOffset(Math.max(0, this.get(index).getEnd() - this.get(index).getStart()), isFrames);
 	}
 	
+	public SubtitleFormat getFormat()
+	{
+		return format;
+	}
+
+	public void setFormat(SubtitleFormat format)
+	{
+		this.format = format;
+	}
+
 	public static class SavedState
 	{
 		private ArrayList<SubtitleItem> subtitles;

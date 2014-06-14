@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.ii.subtitle.model.SubtitleFormat;
 import com.ii.subtitle.model.SubtitleItem;
 import com.ii.subtitle.model.SubtitleText;
 import com.ii.subtitle.model.Subtitles;
@@ -19,6 +20,11 @@ public class SrtParser extends SubtitlesParser
 	private static final Pattern TEXT_PART_PATTERN = Pattern.compile("(<[biu]>)|(</[biu]>)");
 	private static final Pattern ITEM_SEPARATOR_PATTERN = Pattern.compile("(\\n\\n|\\A)\\d+\\n", Pattern.MULTILINE);
 	private static final Pattern TIME_STRING_PATTERN = Pattern.compile("(\\d\\d):(\\d\\d):(\\d\\d),(\\d\\d\\d)");
+	
+	public static SubtitlesParser createParser(String content)
+	{
+		return new SrtParser(content);
+	}
 
 	public static int getTime(String hours, String minutes, String seconds, String miliseconds)
 	{
@@ -35,7 +41,7 @@ public class SrtParser extends SubtitlesParser
 		return -1;
 	}
 
-	public SrtParser(String content)
+	SrtParser(String content)
 	{
 		super(content);
 	}
@@ -68,7 +74,7 @@ public class SrtParser extends SubtitlesParser
 				subList.add(item);
 			}
 		}
-		this.setSubtitles(new Subtitles(subList));
+		this.setSubtitles(new Subtitles(subList, SubtitleFormat.SUBRIP));
 	}
 
 	private SubtitleItem parseItem(String itemString)
@@ -171,20 +177,20 @@ public class SrtParser extends SubtitlesParser
 			if (i != preDecodedLines.size() - 1)
 			{
 				TextGroup lineGroup = new TextGroup(Type.LINE);
-				addTextParts(lineGroup, line, TEXT_PART_PATTERN);
+				addTextParts(lineGroup, line);
 				root.addChild(lineGroup);
 			}
 			else
 			{
-				addTextParts(root, line, TEXT_PART_PATTERN);
+				addTextParts(root, line);
 			}
 		}
 		return root;
 	}
 
-	private void addTextParts(TextGroup group, String text, Pattern p)
+	private void addTextParts(TextGroup group, String text)
 	{
-		Matcher mathcer = p.matcher(text);
+		Matcher mathcer = TEXT_PART_PATTERN.matcher(text);
 		int level = 0;
 		int openTagEnd = -1;
 		int closeTagEnd = -1;
@@ -235,7 +241,7 @@ public class SrtParser extends SubtitlesParser
 					if (formattedGroup != null)
 					{
 						group.addChild(formattedGroup);
-						addTextParts(formattedGroup, text.substring(openTagEnd, mathcer.start()), p);
+						addTextParts(formattedGroup, text.substring(openTagEnd, mathcer.start()));
 					}
 				}
 			}

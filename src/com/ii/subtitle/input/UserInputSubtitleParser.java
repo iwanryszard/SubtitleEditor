@@ -15,7 +15,7 @@ public class UserInputSubtitleParser extends SrtParser
 	
 	public UserInputSubtitleParser(String text, String start, String end, String duration, boolean isFrames)
 	{
-		super(text);
+		super("");
 		this.start = start;
 		this.end = end;
 		this.duration = duration;

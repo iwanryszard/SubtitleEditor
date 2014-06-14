@@ -42,6 +42,7 @@ import com.ii.subtitle.input.SrtParser;
 import com.ii.subtitle.input.SubtitleParserFactory;
 import com.ii.subtitle.input.SubtitlesParser;
 import com.ii.subtitle.input.SubtitlesParser.WrongFormatException;
+import com.ii.subtitle.model.SubtitleFormat;
 import com.ii.subtitle.model.SubtitleItem;
 import com.ii.subtitle.model.Subtitles;
 import com.ii.subtitle.output.AbstractSubtitlesWriter;
@@ -102,7 +103,7 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 	private javax.swing.JRadioButton timeRadioButton;
 	private JButton btnInterpolate;
 	private JButton btnTranslate;
-	private Subtitles in = new Subtitles(new ArrayList<SubtitleItem>());
+	private Subtitles in = new Subtitles(new ArrayList<SubtitleItem>(), SubtitleFormat.SUBRIP);
 	private File currentFile;
 
 	private boolean isSaved = false;
@@ -562,7 +563,7 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 			e1.printStackTrace();
 		}
 		in = parser == null ? null : parser.getSubtitles();
-		in = in == null ? new Subtitles(new ArrayList<SubtitleItem>()) : in;
+		in = in == null ? new Subtitles(new ArrayList<SubtitleItem>(), SubtitleFormat.SUBRIP) : in;
 		if (in.isInFrames())
 		{
 			double fps = in.getFrameRatePerSecond();
@@ -868,8 +869,6 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		{
 			currentFile = fileChooser.getSelectedFile();
 			setTitle("Subtitle Editor: " + currentFile.getName());
-
-			in = new Subtitles(new ArrayList<SubtitleItem>());
 			open();
 
 			((SubsTableModel) jTable2.getModel()).setSubtitleList(in);
