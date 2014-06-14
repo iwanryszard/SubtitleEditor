@@ -93,13 +93,10 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 	private JButton btnInterpolate;
 	private JButton btnTranslate;
 	private Subtitles in = new Subtitles(new ArrayList<SubtitleItem>());
-	File currentFile;
-	File quoteFile;
-	boolean quoteHasPath = false;
+	private File currentFile;
 
-	boolean isFrames = false;
-	boolean hasPath = false;
-	boolean isSaved = false;
+	private boolean hasPath = false;
+	private boolean isSaved = false;
 	private JTextField translateTextField;
 	private JTextField interpolateStartInterval;
 	private JTextField interpolateEndInterval;
@@ -557,17 +554,8 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		}
 		in = parser == null ? null : parser.getSubtitles();
 		in = in == null ? new Subtitles(new ArrayList<SubtitleItem>()) : in;
-		if (!in.isInFrames())
+		if (in.isInFrames())
 		{
-			timeRadioButton.setSelected(true);
-			framesRadioButton.setSelected(false);
-			isFrames = false;
-		}
-		else
-		{
-			framesRadioButton.setSelected(true);
-			timeRadioButton.setSelected(false);
-			isFrames = true;
 			double fps = in.getFrameRatePerSecond();
 			if (fps == 15)
 				FPSComboBox.setSelectedIndex(0);
@@ -661,7 +649,7 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		}
 	}
 
-	private int getSubtitleOffsetFromString(String offsetString) {
+	private int getSubtitleOffsetFromString(String offsetString, boolean isFrames) {
 		offsetString = offsetString.trim();
 		int result;
 		if(isFrames)
@@ -726,9 +714,6 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		}
 		this.moveDownButton.setEnabled(selectedIndex >= 0 && endIndex < in.size() - 1);
 		this.moveUpButton.setEnabled(selectedIndex > 0);
-		
-		this.timeRadioButton.setEnabled(in.isInFrames());
-		this.framesRadioButton.setEnabled(!in.isInFrames());
 	}
 
 	@Override
@@ -797,7 +782,7 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		}
 		else if (e.getSource().equals(timeRadioButton) || e.getSource().equals(framesRadioButton))
 		{
-			command = new SwitchModeCommand(this, in, in.getFrameRatePerSecond(), e.getSource().equals(framesRadioButton));
+			command = new SwitchModeCommand(this, in, in.getFrameRatePerSecond(), !in.isInFrames());
 		}
 		else if (e.getSource().equals(saveAsButton))
 		{
@@ -815,15 +800,14 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		}
 		else if (e.getSource().equals(btnTranslate))
 		{
-			int translateDelta = getSubtitleOffsetFromString(translateTextField.getText());
+			int translateDelta = getSubtitleOffsetFromString(translateTextField.getText(), in.isInFrames());
 			command = new TranslateCommand(this, in, translateDelta);
 		}
 		else if (e.getSource().equals(btnInterpolate))
 		{
-			command = new InterpolateCommand(this, in,
-					getSubtitleOffsetFromString(interpolateStartInterval.getText()), getSubtitleOffsetFromString(interpolateEndInterval.getText()));
+			command = new InterpolateCommand(this, in, getSubtitleOffsetFromString(interpolateStartInterval.getText(), in.isInFrames()),
+			        getSubtitleOffsetFromString(interpolateEndInterval.getText(), in.isInFrames()));
 		}
-		
 
 		if (command != null)
 		{
