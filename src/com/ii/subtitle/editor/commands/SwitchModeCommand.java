@@ -13,7 +13,7 @@ public class SwitchModeCommand extends AbstractSubtitlesCommand
 		this.subtitles.setInFrames(this.isInFrames);
 		this.subtitles.setFrameRatePerSecond(framesPerSec);
 		double factor = this.isInFrames ? (framesPerSec / 1000) : (1000 / framesPerSec);
-		for (int i = 0; i < this.subtitles.size(); i++)
+		for (int i = 0; i < this.subtitles.getItems().size(); i++)
 		{
 			int itemStart = (int) Math.round(this.subtitles.getStart(i) * factor);
 			int itemEnd = (int) Math.round(this.subtitles.getEnd(i) * factor);
@@ -32,7 +32,7 @@ public class SwitchModeCommand extends AbstractSubtitlesCommand
 	@Override
 	protected boolean internalExecute()
 	{
-		if (this.subtitles.size() == 0 || this.subtitles.isInFrames() == this.isInFrames)
+		if (this.subtitles.getItems().size() == 0 || this.subtitles.isInFrames() == this.isInFrames)
 		{
 			return false;
 		}

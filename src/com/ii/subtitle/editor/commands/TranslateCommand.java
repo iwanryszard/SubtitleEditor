@@ -19,7 +19,7 @@ public class TranslateCommand extends AbstractSubtitlesCommand
 	
 	private void executeTranslate(int translate){
 		int start = Math.max(0, firstSelIndex);
-		int end = Math.min(secondSelIndex, this.subtitles.size() - 1);
+		int end = Math.min(secondSelIndex, this.subtitles.getItems().size() - 1);
 		for (int i = start; i <= end; i++)
 		{
 			this.subtitles.setStart(i, this.subtitles.getStart(i) + translate);

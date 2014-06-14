@@ -1,7 +1,6 @@
 package com.ii.subtitle.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Subtitles
@@ -115,39 +114,9 @@ public class Subtitles
 		}
 	}
 
-	public int size()
+	public List<SubtitleItem> getItems()
 	{
-		return this.items.size();
-	}
-
-	public SubtitleItem set(int index, SubtitleItem item)
-	{
-		return this.items.set(index, item);
-	}
-
-	public void add(int index, SubtitleItem item)
-	{
-		this.items.add(index, item);
-	}
-
-	public void addAll(int index, List<SubtitleItem> items)
-	{
-		this.items.addAll(index, items);
-	}
-
-	public void remove(int index)
-	{
-		this.items.remove(index);
-	}
-
-	public List<SubtitleItem> subList(int fromIndex, int toIndex)
-	{
-		return this.items.subList(fromIndex, toIndex);
-	}
-
-	public void swap(int i, int j)
-	{
-		Collections.swap(this.items, i, j);
+		return this.items;
 	}
 
 }

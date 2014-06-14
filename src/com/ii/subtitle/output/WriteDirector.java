@@ -26,7 +26,7 @@ public class WriteDirector implements SubtitleTextVisitor
 		try
 		{
 			writer.onGenerationStart();
-			for (int i = 0; i < subtitles.size(); i++)
+			for (int i = 0; i < subtitles.getItems().size(); i++)
 			{
 				writeItem(i);
 			}

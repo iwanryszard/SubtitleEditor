@@ -721,7 +721,7 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		{
 			component.setEnabled(selectedIndex >= 0);
 		}
-		this.moveDownButton.setEnabled(selectedIndex >= 0 && endIndex < in.size() - 1);
+		this.moveDownButton.setEnabled(selectedIndex >= 0 && endIndex < in.getItems().size() - 1);
 		this.moveUpButton.setEnabled(selectedIndex > 0);
 	}
 
@@ -762,7 +762,7 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		else if (e.getSource().equals(newSubAfterButton))
 		{
 			int index = getEndSelectionIndex();
-			index = index != -1 ? index + 1 : in.size();
+			index = index != -1 ? index + 1 : in.getItems().size();
 			command = new AddNewCommand(this, in, index);
 		}
 		else if (e.getSource().equals(deleteButton))

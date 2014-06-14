@@ -24,7 +24,7 @@ public class DeleteCommand extends AbstractSubtitlesCommand
 	@Override
 	protected boolean internalExecute()
 	{
-		List<SubtitleItem> range = subtitles.subList(this.firstSelIndex, this.secondSelIndex);
+		List<SubtitleItem> range = subtitles.getItems().subList(this.firstSelIndex, this.secondSelIndex);
 		removedItems = new ArrayList<>(range);
 		range.clear();
 		model.setSelection(-1, -1);
@@ -34,7 +34,7 @@ public class DeleteCommand extends AbstractSubtitlesCommand
 	@Override
 	protected boolean internalUndo()
 	{
-		subtitles.addAll(this.firstSelIndex, removedItems);
+		subtitles.getItems().addAll(this.firstSelIndex, removedItems);
 		model.setSelection(firstSelIndex, secondSelIndex);
 		return true;
 	}

@@ -35,7 +35,7 @@ public class SubsTableModel extends AbstractTableModel
 	@Override
 	public int getRowCount()
 	{
-		return subsList.size();
+		return subsList.getItems().size();
 	}
 
 	@Override

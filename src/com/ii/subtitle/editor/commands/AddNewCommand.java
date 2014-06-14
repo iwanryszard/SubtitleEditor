@@ -21,7 +21,7 @@ public class AddNewCommand extends AbstractSubtitlesCommand
 	@Override
 	protected boolean internalExecute()
 	{
-		subtitles.add(subtitleIndex,  new SubtitleItem(0, 0,  new TextLeaf("")));
+		subtitles.getItems().add(subtitleIndex,  new SubtitleItem(0, 0,  new TextLeaf("")));
 		this.model.setSelection(subtitleIndex, subtitleIndex);
 		return true;
 	}
@@ -29,7 +29,7 @@ public class AddNewCommand extends AbstractSubtitlesCommand
 	@Override
 	protected boolean internalUndo()
 	{
-		subtitles.remove(subtitleIndex);
+		subtitles.getItems().remove(subtitleIndex);
 		this.model.setSelection(firstSelIndex, secondSelIndex);
 		return true;
 	}

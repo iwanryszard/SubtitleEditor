@@ -34,7 +34,7 @@ public class UpdateCommand extends AbstractSubtitlesCommand
 			parser.parse();
 			if(parser.getSubtitle() != null)
 			{
-				this.oldSubtitle = subtitles.set(subtitleIndex, parser.getSubtitle());
+				this.oldSubtitle = subtitles.getItems().set(subtitleIndex, parser.getSubtitle());
 				return true;
 			}
 		}
@@ -51,7 +51,7 @@ public class UpdateCommand extends AbstractSubtitlesCommand
 	{
 		if (this.oldSubtitle != null)
 		{
-			subtitles.set(subtitleIndex, this.oldSubtitle);
+			subtitles.getItems().set(subtitleIndex, this.oldSubtitle);
 			return true;
 		}
 		return false;

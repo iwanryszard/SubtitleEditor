@@ -14,7 +14,7 @@ public class InterpolateCommand extends AbstractSubtitlesCommand
 	{
 		
 		startIndex = Math.max(0, startIndex);
-		int endIndex = Math.min(startIndex + count - 1, this.subtitles.size() - 1);
+		int endIndex = Math.min(startIndex + count - 1, this.subtitles.getItems().size() - 1);
 		
 		int oldStart = this.subtitles.getStart(startIndex);
 		int oldEnd = this.subtitles.getStart(endIndex);
