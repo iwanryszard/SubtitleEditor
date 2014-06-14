@@ -1,7 +1,6 @@
 package com.ii.subtitle.editor.commands;
 
-import com.ii.subtitle.editor.Command;
-import com.ii.subtitle.editor.Subtitles;
+import com.ii.subtitle.model.Subtitles;
 
 public abstract class AbstractSubtitlesCommand implements Command
 {

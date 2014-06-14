@@ -2,7 +2,7 @@ package com.ii.subtitle.editor.commands;
 
 import java.util.Collections;
 
-import com.ii.subtitle.editor.Subtitles;
+import com.ii.subtitle.model.Subtitles;
 
 public class MoveCommand extends AbstractSubtitlesCommand
 {

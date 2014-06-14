@@ -1,10 +1,15 @@
-package com.ii.subtitle.editor;
+package com.ii.subtitle.input;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.ii.subtitle.editor.SubtitleText.Type;
+import com.ii.subtitle.model.SubtitleItem;
+import com.ii.subtitle.model.SubtitleText;
+import com.ii.subtitle.model.Subtitles;
+import com.ii.subtitle.model.TextGroup;
+import com.ii.subtitle.model.TextLeaf;
+import com.ii.subtitle.model.SubtitleText.Type;
 
 public class SubParser extends SubtitlesParser
 {

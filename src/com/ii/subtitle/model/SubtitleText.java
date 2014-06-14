@@ -1,4 +1,5 @@
-package com.ii.subtitle.editor;
+package com.ii.subtitle.model;
+
 
 public abstract class SubtitleText
 {

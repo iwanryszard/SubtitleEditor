@@ -1,9 +1,14 @@
-package com.ii.subtitle.editor;
+package com.ii.subtitle.output;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.ii.subtitle.editor.SubtitleText.Type;
+import com.ii.subtitle.model.SubtitleItem;
+import com.ii.subtitle.model.SubtitleText;
+import com.ii.subtitle.model.SubtitleTextVisitor;
+import com.ii.subtitle.model.TextGroup;
+import com.ii.subtitle.model.TextLeaf;
+import com.ii.subtitle.model.SubtitleText.Type;
 
 public class SubtitlesWriteDirector implements SubtitleTextVisitor
 {

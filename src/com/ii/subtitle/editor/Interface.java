@@ -27,9 +27,9 @@ import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
-import com.ii.subtitle.editor.SubtitlesParser.WrongFormatException;
 import com.ii.subtitle.editor.commands.AbstractSubtitlesCommand.SelectionModel;
 import com.ii.subtitle.editor.commands.AddNewCommand;
+import com.ii.subtitle.editor.commands.Command;
 import com.ii.subtitle.editor.commands.CommandController;
 import com.ii.subtitle.editor.commands.DeleteCommand;
 import com.ii.subtitle.editor.commands.InterpolateCommand;
@@ -38,6 +38,16 @@ import com.ii.subtitle.editor.commands.SwitchModeCommand;
 import com.ii.subtitle.editor.commands.TranslateCommand;
 import com.ii.subtitle.editor.commands.UpdateCommand;
 import com.ii.subtitle.editor.commands.CommandController.CommandActionsHandler;
+import com.ii.subtitle.input.SrtParser;
+import com.ii.subtitle.input.SubtitleParserFactory;
+import com.ii.subtitle.input.SubtitlesParser;
+import com.ii.subtitle.input.SubtitlesParser.WrongFormatException;
+import com.ii.subtitle.model.SubtitleItem;
+import com.ii.subtitle.model.Subtitles;
+import com.ii.subtitle.output.AbstractSubtitlesWriter;
+import com.ii.subtitle.output.SrtWriter;
+import com.ii.subtitle.output.SubWriter;
+import com.ii.subtitle.output.SubtitlesWriteDirector;
 
 import javax.swing.JTextField;
 

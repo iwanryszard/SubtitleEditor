@@ -1,8 +1,13 @@
-package com.ii.subtitle.editor;
+package com.ii.subtitle.model;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.ii.subtitle.output.SrtWriter;
+import com.ii.subtitle.output.SubtitleHTMLWriter;
+import com.ii.subtitle.output.SubtitleSingleLineTextWriter;
+import com.ii.subtitle.output.SubtitlesWriteDirector;
 
 public class Subtitles extends ArrayList<SubtitleItem>
 {

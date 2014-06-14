@@ -1,4 +1,4 @@
-package com.ii.subtitle.editor;
+package com.ii.subtitle.output;
 
 import java.io.BufferedWriter;
 import java.io.File;

@@ -1,4 +1,6 @@
-package com.ii.subtitle.editor;
+package com.ii.subtitle.input;
+
+import com.ii.subtitle.model.Subtitles;
 
 public abstract class SubtitlesParser
 {

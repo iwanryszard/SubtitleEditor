@@ -2,6 +2,8 @@ package com.ii.subtitle.editor;
 
 import javax.swing.table.AbstractTableModel;
 
+import com.ii.subtitle.model.Subtitles;
+
 public class SubsTableModel extends AbstractTableModel
 {
 	/**

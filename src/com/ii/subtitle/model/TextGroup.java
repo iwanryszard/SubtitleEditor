@@ -1,6 +1,8 @@
-package com.ii.subtitle.editor;
+package com.ii.subtitle.model;
 
 import java.util.ArrayList;
+
+import com.ii.subtitle.model.SubtitleText.Type;
 
 public class TextGroup extends SubtitleText
 {

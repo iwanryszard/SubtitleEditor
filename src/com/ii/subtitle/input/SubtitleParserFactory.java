@@ -1,9 +1,11 @@
-package com.ii.subtitle.editor;
+package com.ii.subtitle.input;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
+import com.ii.subtitle.model.SubtitlesType;
 
 public class SubtitleParserFactory
 {

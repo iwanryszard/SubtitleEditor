@@ -1,8 +1,8 @@
 package com.ii.subtitle.editor.commands;
 
-import com.ii.subtitle.editor.SubtitleItem;
-import com.ii.subtitle.editor.Subtitles;
-import com.ii.subtitle.editor.TextLeaf;
+import com.ii.subtitle.model.SubtitleItem;
+import com.ii.subtitle.model.Subtitles;
+import com.ii.subtitle.model.TextLeaf;
 
 public class AddNewCommand extends AbstractSubtitlesCommand
 {

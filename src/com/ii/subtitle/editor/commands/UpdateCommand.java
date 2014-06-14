@@ -1,9 +1,9 @@
 package com.ii.subtitle.editor.commands;
 
-import com.ii.subtitle.editor.SubtitleItem;
-import com.ii.subtitle.editor.Subtitles;
-import com.ii.subtitle.editor.UserInputSubtitleParser;
-import com.ii.subtitle.editor.SubtitlesParser.WrongFormatException;
+import com.ii.subtitle.input.UserInputSubtitleParser;
+import com.ii.subtitle.input.SubtitlesParser.WrongFormatException;
+import com.ii.subtitle.model.SubtitleItem;
+import com.ii.subtitle.model.Subtitles;
 
 public class UpdateCommand extends AbstractSubtitlesCommand
 {

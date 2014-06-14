@@ -2,8 +2,6 @@ package com.ii.subtitle.editor.commands;
 
 import java.util.Stack;
 
-import com.ii.subtitle.editor.Command;
-
 public class CommandController
 {
 	private static final CommandController controller = new CommandController();

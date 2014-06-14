@@ -1,4 +1,6 @@
-package com.ii.subtitle.editor;
+package com.ii.subtitle.model;
+
+import com.ii.subtitle.model.SubtitleText.Type;
 
 public class TextLeaf extends SubtitleText
 {

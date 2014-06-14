@@ -1,4 +1,7 @@
-package com.ii.subtitle.editor;
+package com.ii.subtitle.input;
+
+import com.ii.subtitle.model.SubtitleItem;
+import com.ii.subtitle.model.SubtitleText;
 
 public class UserInputSubtitleParser extends SrtParser
 {

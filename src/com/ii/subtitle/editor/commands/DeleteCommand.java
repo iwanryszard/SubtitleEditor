@@ -3,8 +3,8 @@ package com.ii.subtitle.editor.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ii.subtitle.editor.SubtitleItem;
-import com.ii.subtitle.editor.Subtitles;
+import com.ii.subtitle.model.SubtitleItem;
+import com.ii.subtitle.model.Subtitles;
 
 
 public class DeleteCommand extends AbstractSubtitlesCommand

@@ -1,4 +1,4 @@
-package com.ii.subtitle.editor;
+package com.ii.subtitle.output;
 
 import java.io.File;
 import java.io.IOException;
