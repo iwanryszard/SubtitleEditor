@@ -1,6 +1,7 @@
 package com.ii.subtitle.editor;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -9,21 +10,26 @@ import com.ii.subtitle.editor.SubtitleText.Type;
 public class SrtParser extends SubtitlesParser
 {
 
-	public static int getTime(String timeString)
+	private static final Pattern TIMES_STRING_PATTERN = Pattern.compile("(\\d\\d):(\\d\\d):(\\d\\d),(\\d\\d\\d) --> (\\d\\d):(\\d\\d):(\\d\\d),(\\d\\d\\d)");
+	private static final Pattern TEXT_PART_PATTERN = Pattern.compile("(<[biu]>)|(</[biu]>)");
+	private static final Pattern ITEM_SEPARATOR_PATTERN = Pattern.compile("(\\n\\n|\\A)\\d+\\n", Pattern.MULTILINE);
+	private static final Pattern TIME_STRING_PATTERN = Pattern.compile("(\\d\\d):(\\d\\d):(\\d\\d),(\\d\\d\\d)");
+
+	public static int getTime(String hours, String minutes, String seconds, String miliseconds)
 	{
-		String startTimeArray[] = timeString.split("[:,]");
-		if (startTimeArray.length > 3)
+		return Integer.parseInt(hours) * 3600 * 1000 + Integer.parseInt(minutes) * 60 * 1000 + Integer.parseInt(seconds) * 1000 + Integer.parseInt(miliseconds);
+	}
+
+	public static int getTime(String input)
+	{
+		Matcher matcher = TIME_STRING_PATTERN.matcher(input);
+		if (matcher.find() && matcher.start() == 0 && matcher.end() == input.length() - 1)
 		{
-			int miliseconds = Integer.parseInt(startTimeArray[3]);
-			int seconds = Integer.parseInt(startTimeArray[2]);
-			int minutes = Integer.parseInt(startTimeArray[1]);
-			int hours = Integer.parseInt(startTimeArray[0]);
-			return hours * 3600 * 1000 + minutes * 60 * 1000 + seconds * 1000 + miliseconds;
+			return getTime(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4));
 		}
 		return -1;
 	}
-	
-	
+
 	public SrtParser(String content)
 	{
 		super(content);
@@ -32,55 +38,82 @@ public class SrtParser extends SubtitlesParser
 	@Override
 	public void parse() throws WrongFormatException
 	{
-		String content = this.getContent();
-
-		content = "\n\n" + content;
-		String[] subtitleRaw = content.split("(\\n\\n)(\\d+)(\\n)");
-
 		ArrayList<SubtitleItem> subList = new ArrayList<>();
-		for (int i = 1; i < subtitleRaw.length; i++)
+
+		String content = this.getContent();
+		Matcher m = ITEM_SEPARATOR_PATTERN.matcher(content);
+		m.find();
+		int start = m.end();
+		while (m.find())
 		{
-			String timesString = getTimeString(subtitleRaw[i]);
-			if (timesString == null)
+			int end = m.start();
+			String itemString = content.substring(start, end);
+			start = m.end();
+			SubtitleItem item = parseItem(itemString);
+			if (item != null)
 			{
-				continue;
+				subList.add(item);
 			}
-			int[] times = getTimes(timesString);
-			SubtitleText text = getText(subtitleRaw[i].substring(Math.min(timesString.length() + 1, subtitleRaw[i].length())));
-			if (text == null)
+		}
+		if (start < content.length())
+		{
+			SubtitleItem item = parseItem(content.substring(start));
+			if (item != null)
 			{
-				continue;
+				subList.add(item);
 			}
-			SubtitleItem item = new SubtitleItem(times[0], times[1], text);
-			subList.add(item);
 		}
 		this.setSubtitles(new Subtitles(subList));
-
 	}
 
-	private String getTimeString(String subtitleString)
+	private SubtitleItem parseItem(String itemString)
 	{
-		Pattern p = Pattern.compile("\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d --> \\d\\d:\\d\\d:\\d\\d,\\d\\d\\d");
-		Matcher matcher = p.matcher(subtitleString);
+		int[] times = getTimes(itemString);
+		String subtitleText = times != null ? itemString.substring(Math.min(times[2] + 1, itemString.length())) : null;
+		SubtitleText text = subtitleText != null ? getText(subtitleText) : null;
+		SubtitleItem item = text != null ? new SubtitleItem(times[0], times[1], text) : null;
+		return item;
+	}
+
+	// TODO fix the hack with index returned in result
+	private int[] getTimes(String subtitleString)
+	{
+		Matcher matcher = TIMES_STRING_PATTERN.matcher(subtitleString);
 		if (matcher.find() && matcher.start() == 0)
 		{
-			return subtitleString.substring(matcher.start(), matcher.end());
+			int start = getTime(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4));
+			int end = getTime(matcher.group(5), matcher.group(6), matcher.group(7), matcher.group(8));
+			return new int[] { start, end, matcher.end() };
 		}
 		return null;
 	}
 
-	private String[] preDecodeines(String textString)
+	private List<String> preDecodeLines(String textString)
 	{
-		ArrayList<String> currentlyOpenedTags = new ArrayList<>();
-		String[] lines = textString.split("\\n++");
-		for (int i = 0; i < lines.length; i++)
+		List<String> currentlyOpenedTags = new ArrayList<>();
+		int start = 0;
+		int end = 0;
+		List<String> linesList = new ArrayList<>();
+		while ((end = textString.indexOf('\n', start)) != -1)
 		{
-			lines[i] = getPreDecodedLine(lines[i], currentlyOpenedTags);
+			String line = textString.substring(start, end);
+			if (line.length() > 0)
+			{
+				line = getPreDecodedLine(line, currentlyOpenedTags);
+				linesList.add(line);
+			}
+			start = end + 1;
 		}
-		return lines;
+		if (start < textString.length())
+		{
+			String line = textString.substring(start);
+			line = getPreDecodedLine(line, currentlyOpenedTags);
+			linesList.add(line);
+		}
+		return linesList;
 	}
 
-	private String getPreDecodedLine(String line, ArrayList<String> openedTags)
+	private String getPreDecodedLine(String line, List<String> openedTags)
 	{
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < openedTags.size(); i++)
@@ -90,8 +123,7 @@ public class SrtParser extends SubtitlesParser
 		builder.append(line);
 		openedTags.clear();
 		line = builder.toString();
-		Pattern p = Pattern.compile("(<[biu]>)|(</[biu]>)");
-		Matcher mathcer = p.matcher(line);
+		Matcher mathcer = TEXT_PART_PATTERN.matcher(line);
 		while (mathcer.find())
 		{
 			String match = mathcer.group();
@@ -127,24 +159,21 @@ public class SrtParser extends SubtitlesParser
 	{
 
 		TextGroup root = new TextGroup(Type.ROOT);
-		Pattern p = Pattern.compile("(<[biu]>)|(</[biu]>)");
-		String[] preDecodedLines = preDecodeines(textString);
-		for (int i = 0; i < preDecodedLines.length; i++)
+		List<String> preDecodedLines = preDecodeLines(textString);
+		for (int i = 0; i < preDecodedLines.size(); i++)
 		{
-			String line = preDecodedLines[i];
-			if (i != preDecodedLines.length - 1)
+			String line = preDecodedLines.get(i);
+			if (i != preDecodedLines.size() - 1)
 			{
 				TextGroup lineGroup = new TextGroup(Type.LINE);
-				addTextParts(lineGroup, line, p);
+				addTextParts(lineGroup, line, TEXT_PART_PATTERN);
 				root.addChild(lineGroup);
 			}
 			else
 			{
-				addTextParts(root, line, p);
+				addTextParts(root, line, TEXT_PART_PATTERN);
 			}
-
 		}
-
 		return root;
 	}
 
@@ -183,20 +212,20 @@ public class SrtParser extends SubtitlesParser
 					TextGroup formattedGroup = null;
 					switch (c)
 					{
-					case 'b':
-						formattedGroup = new TextGroup(Type.BOLD);
-						break;
+						case 'b':
+							formattedGroup = new TextGroup(Type.BOLD);
+							break;
 
-					case 'i':
-						formattedGroup = new TextGroup(Type.ITALICS);
-						break;
+						case 'i':
+							formattedGroup = new TextGroup(Type.ITALICS);
+							break;
 
-					case 'u':
-						formattedGroup = new TextGroup(Type.UNDERLINE);
-						break;
+						case 'u':
+							formattedGroup = new TextGroup(Type.UNDERLINE);
+							break;
 
-					default:
-						break;
+						default:
+							break;
 					}
 					if (formattedGroup != null)
 					{
@@ -214,20 +243,4 @@ public class SrtParser extends SubtitlesParser
 		}
 
 	}
-
-	private int[] getTimes(String times)
-	{
-		String[] timesComponents = times.split(" --> ");
-		if (timesComponents.length > 1)
-		{
-			int start = getTime(timesComponents[0]);
-			int end = getTime(timesComponents[1]);
-			if (start != -1 && end != -1)
-			{
-				return new int[] { start, end };
-			}
-		}
-		return null;
-	}
-
 }

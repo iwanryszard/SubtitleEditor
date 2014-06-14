@@ -9,10 +9,9 @@ import com.ii.subtitle.editor.SubtitleText.Type;
 public class SubParser extends SubtitlesParser
 {
 
-	private static final Pattern boldPattern = Pattern.compile("\\{([Yy]:b)\\}");
-	private static final Pattern italicsPattern = Pattern.compile("\\{([Yy]:i)\\}");
-	private static final Pattern underlinePattern = Pattern.compile("\\{([Yy]:u)\\}");
-	
+	private static final Pattern TEXT_STYLE_PATTERN = Pattern.compile("\\{[Yy]:(b?i?u?)\\}");
+	private static final Pattern FRAMES_PATTERN = Pattern.compile("\\{(\\d++)\\}\\{(\\d++)\\}");
+
 	public SubParser(String content)
 	{
 		super(content);
@@ -26,95 +25,77 @@ public class SubParser extends SubtitlesParser
 		ArrayList<SubtitleItem> subList = new ArrayList<>();
 
 		String[] subtitleRaw = content.split("\\n");
-		boolean hasFramerate = (subtitleRaw.length > 0);
 		int start = 0;
-		if (hasFramerate)
+		if (subtitleRaw.length > 0 && subtitleRaw[0].startsWith("{1}{1}"))
 		{
-			if (subtitleRaw[0].startsWith("﻿{1}{1}"))
-			{
-				start = 1;
-				framesPerSecond = Double.parseDouble(subtitleRaw[0].replace("﻿{1}{1}", ""));
-			}
-			if (subtitleRaw[0].startsWith("{1}{1}"))
-			{
-				start = 1;
-				framesPerSecond = Double.parseDouble(subtitleRaw[0].replace("{1}{1}", ""));
-			}
+			start = 1;
+			framesPerSecond = Double.parseDouble(subtitleRaw[0].substring("{1}{1}".length()));
 		}
 
 		for (int i = start; i < subtitleRaw.length; i++)
 		{
-			String framesString = getFramesString(subtitleRaw[i]);
-			if(framesString == null)
+			int[] frames = getFrames(subtitleRaw[i]);
+			if (frames == null)
 			{
 				continue;
 			}
-			int[] frames = getFrames(framesString);
-			String textContent = subtitleRaw[i].substring(framesString.length());
+			String textContent = subtitleRaw[i].substring(frames[2]);
 			SubtitleText text = getText(textContent);
 			SubtitleItem item = new SubtitleItem(frames[0], frames[1], text);
 			subList.add(item);
 		}
-		
+
 		this.setSubtitles(new Subtitles(subList, framesPerSecond));
 	}
-	
+
 	private SubtitleText getText(String subtitleString)
 	{
-		int previousLength = subtitleString.length();
-		subtitleString = boldPattern.matcher(subtitleString).replaceAll("");
-		boolean bold = previousLength != subtitleString.length();
-		
-		previousLength = subtitleString.length();
-		subtitleString = italicsPattern.matcher(subtitleString).replaceAll("");
-		boolean italics = previousLength != subtitleString.length();
-		
-		previousLength = subtitleString.length();
-		subtitleString = underlinePattern.matcher(subtitleString).replaceAll("");
-		boolean underline = previousLength != subtitleString.length();
-		//TODO check for typeface
-		
 		TextGroup root = new TextGroup(Type.ROOT);
 		TextGroup currentGroup = root;
-		if(bold)
+
+		Matcher m = TEXT_STYLE_PATTERN.matcher(subtitleString);
+		if (m.find())
 		{
-			currentGroup = addFromatGroup(currentGroup, Type.BOLD);
+			String styles = m.group(0);
+			if (styles.indexOf('b') != -1)
+			{
+				currentGroup = addFromatGroup(currentGroup, Type.BOLD);
+			}
+			if (styles.indexOf('i') != -1)
+			{
+				currentGroup = addFromatGroup(currentGroup, Type.ITALICS);
+			}
+			if (styles.indexOf('u') != -1)
+			{
+				currentGroup = addFromatGroup(currentGroup, Type.UNDERLINE);
+			}
+			// TODO check for typeface
+			subtitleString = subtitleString.substring(m.end());
 		}
-		if(italics)
-		{
-			currentGroup = addFromatGroup(currentGroup, Type.ITALICS);
-		}
-		if(underline)
-		{
-			currentGroup = addFromatGroup(currentGroup, Type.UNDERLINE);
-		}
-		
 		addText(currentGroup, subtitleString);
-		
+
 		return root;
 	}
-	
+
 	private void addText(TextGroup currentGroup, String text)
 	{
-		String[] lines = text.split("\\|");
-		for (int i = 0; i < lines.length; i++)
+		int start = 0;
+		int end = 0;
+		while ((end = text.indexOf('|', start)) != -1)
 		{
-			String line = lines[i];
-			if(line.equals(""))
-			{
-				continue;
-			}
-			if(i != lines.length - 1)
+			String line = text.substring(start, end);
+			if (line.length() > 0)
 			{
 				TextGroup lineGroup = new TextGroup(Type.LINE);
 				lineGroup.addChild(new TextLeaf(line));
 				currentGroup.addChild(lineGroup);
 			}
-			else
-			{
-				TextLeaf leaf = new TextLeaf(line);
-				currentGroup.addChild(leaf);
-			}
+			start = end + 1;
+		}
+		if (start < text.length())
+		{
+			String line = text.substring(start);
+			currentGroup.addChild(new TextLeaf(line));
 		}
 	}
 
@@ -124,22 +105,17 @@ public class SubParser extends SubtitlesParser
 		currentGroup.addChild(group);
 		return group;
 	}
-	
-	private String getFramesString(String subtitleString)
+
+	private int[] getFrames(String subtitleString)
 	{
-		Pattern p = Pattern.compile("\\{(\\d)++\\}\\{(\\d)++\\}");
-		Matcher matcher = p.matcher(subtitleString);
-		if(matcher.find() && matcher.start() == 0)
+		Matcher matcher = FRAMES_PATTERN.matcher(subtitleString);
+		if (matcher.find() && matcher.start() == 0)
 		{
-			return subtitleString.substring(matcher.start(), matcher.end());
+			int start = Integer.parseInt(matcher.group(1));
+			int end = Integer.parseInt(matcher.group(2));
+			return new int[] { start, end, matcher.end() };
 		}
 		return null;
-	}
-	
-	private int[] getFrames(String framesString)
-	{
-		String[] framesComponents = framesString.split("[\\{\\}]");
-		return new int[]{Integer.parseInt(framesComponents[1]), Integer.parseInt(framesComponents[3])};
 	}
 
 }
