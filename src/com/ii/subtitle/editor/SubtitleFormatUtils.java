@@ -1,9 +1,7 @@
 package com.ii.subtitle.editor;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
 
-import com.ii.subtitle.model.SubtitleItem;
 import com.ii.subtitle.model.Subtitles;
 import com.ii.subtitle.output.SingleLineWriteDirector;
 import com.ii.subtitle.output.SrtWriter;
@@ -41,9 +39,6 @@ public class SubtitleFormatUtils
 	
 	public static String getSubtitleTextSingleLine(Subtitles subtitles, int index)
 	{
-		SubtitleItem item = subtitles.get(index);
-		ArrayList<SubtitleItem> sub = new ArrayList<>();
-		sub.add(item);
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		WriteDirector director = new SingleLineWriteDirector(subtitles, new SingleLineTextWriter(stream), index);
 		director.write();
@@ -52,9 +47,6 @@ public class SubtitleFormatUtils
 	
 	public static String getSubtitleHTMLText(Subtitles subtitles, int index, boolean edit)
 	{
-		SubtitleItem item = subtitles.get(index);
-		ArrayList<SubtitleItem> sub = new ArrayList<>();
-		sub.add(item);
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		WriteDirector director = new SingleLineWriteDirector(subtitles, new HTMLWriter(stream, !edit), index);
 		director.write();

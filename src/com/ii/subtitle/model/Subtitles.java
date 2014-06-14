@@ -1,16 +1,16 @@
 package com.ii.subtitle.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class Subtitles extends ArrayList<SubtitleItem>
+public class Subtitles
 {
-	
-	private static final long serialVersionUID = 8057481440980075348L;
-	
+
 	private SubtitleFormat format;
 	private double frameRatePerSecond;
 	private boolean isFrames;
+	private List<SubtitleItem> items;
 
 	public Subtitles(List<SubtitleItem> subtitles, SubtitleFormat format)
 	{
@@ -19,28 +19,28 @@ public class Subtitles extends ArrayList<SubtitleItem>
 
 	public Subtitles(List<SubtitleItem> subtitles, SubtitleFormat format, double frameRatePerSecond)
 	{
-		this.addAll(subtitles);
+		this.items = new ArrayList<>(subtitles);
 		this.format = format;
 		this.frameRatePerSecond = frameRatePerSecond;
 		this.isFrames = frameRatePerSecond > 0;
 	}
-	
+
 	public SavedState createSavedState()
 	{
 		SavedState s = new SavedState();
 		s.frameRatePerSecond = frameRatePerSecond;
 		s.isFrames = isFrames;
 		s.subtitles = new ArrayList<>();
-		s.subtitles.addAll(this);
+		s.subtitles.addAll(this.items);
 		return s;
 	}
-	
+
 	public void restoreToState(SavedState s)
 	{
 		this.frameRatePerSecond = s.frameRatePerSecond;
 		this.isFrames = s.isFrames;
-		this.clear();
-		this.addAll(s.subtitles);
+		this.items.clear();
+		this.items.addAll(s.subtitles);
 	}
 
 	public double getFrameRatePerSecond()
@@ -52,46 +52,47 @@ public class Subtitles extends ArrayList<SubtitleItem>
 	{
 		this.frameRatePerSecond = frameRatePerSecond;
 	}
-	
+
 	public boolean isInFrames()
 	{
 		return isFrames;
 	}
-	
-	public void setInFrames(boolean isFrames){
+
+	public void setInFrames(boolean isFrames)
+	{
 		this.isFrames = isFrames;
 	}
-	
+
 	public int getStart(int index)
 	{
-		return this.get(index).getStart();
+		return this.items.get(index).getStart();
 	}
-	
+
 	public void setStart(int index, int start)
 	{
-		this.get(index).setStart(start);
+		this.items.get(index).setStart(start);
 	}
-	
+
 	public int getEnd(int index)
 	{
-		return this.get(index).getEnd();
+		return this.items.get(index).getEnd();
 	}
-	
+
 	public void setEnd(int index, int end)
 	{
-		this.get(index).setEnd(end);
+		this.items.get(index).setEnd(end);
 	}
-	
+
 	public int getDuration(int index)
 	{
-		return this.get(index).getEnd() - this.get(index).getStart();
+		return this.items.get(index).getEnd() - this.items.get(index).getStart();
 	}
-	
+
 	public SubtitleText getText(int index)
 	{
-		return this.get(index).getText();
+		return this.items.get(index).getText();
 	}
-	
+
 	public SubtitleFormat getFormat()
 	{
 		return format;
@@ -107,12 +108,46 @@ public class Subtitles extends ArrayList<SubtitleItem>
 		private ArrayList<SubtitleItem> subtitles;
 		private double frameRatePerSecond;
 		private boolean isFrames;
-		
+
 		private SavedState()
 		{
-			
+
 		}
 	}
-	
+
+	public int size()
+	{
+		return this.items.size();
+	}
+
+	public SubtitleItem set(int index, SubtitleItem item)
+	{
+		return this.items.set(index, item);
+	}
+
+	public void add(int index, SubtitleItem item)
+	{
+		this.items.add(index, item);
+	}
+
+	public void addAll(int index, List<SubtitleItem> items)
+	{
+		this.items.addAll(index, items);
+	}
+
+	public void remove(int index)
+	{
+		this.items.remove(index);
+	}
+
+	public List<SubtitleItem> subList(int fromIndex, int toIndex)
+	{
+		return this.items.subList(fromIndex, toIndex);
+	}
+
+	public void swap(int i, int j)
+	{
+		Collections.swap(this.items, i, j);
+	}
 
 }

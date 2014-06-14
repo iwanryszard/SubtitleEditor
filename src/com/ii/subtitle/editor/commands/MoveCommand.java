@@ -1,7 +1,5 @@
 package com.ii.subtitle.editor.commands;
 
-import java.util.Collections;
-
 import com.ii.subtitle.model.Subtitles;
 
 public class MoveCommand extends AbstractSubtitlesCommand
@@ -35,7 +33,7 @@ public class MoveCommand extends AbstractSubtitlesCommand
 		int i = start;
 		while (i != end)
 		{
-			Collections.swap(subtitles, i, i - direction);
+			subtitles.swap(i, i - direction);
 			i -= direction;
 		}
 	}
