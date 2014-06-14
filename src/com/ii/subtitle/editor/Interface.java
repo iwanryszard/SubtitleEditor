@@ -95,7 +95,6 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 	private Subtitles in = new Subtitles(new ArrayList<SubtitleItem>());
 	private File currentFile;
 
-	private boolean hasPath = false;
 	private boolean isSaved = false;
 	private JTextField translateTextField;
 	private JTextField interpolateStartInterval;
@@ -587,7 +586,7 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		if (isSaved){
 			return;
 		}
-		if (hasPath)
+		if (currentFile != null)
 		{
 			AbstractSubtitlesWriter writer = currentFile.getPath().endsWith(".sub") ? new SubWriter(currentFile, in.getFrameRatePerSecond())
 					: new SrtWriter(currentFile);
@@ -609,7 +608,6 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		if (returnVal == JFileChooser.APPROVE_OPTION)
 		{
 			currentFile = fileChooser.getSelectedFile();
-			hasPath = true;
 			boolean isSRT = currentFile.getPath().endsWith(".srt");
 			if (isSRT == in.isInFrames())
 			{
@@ -859,7 +857,6 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		if (returnVal == JFileChooser.APPROVE_OPTION)
 		{
 			currentFile = fileChooser.getSelectedFile();
-			hasPath = true;
 			setTitle("Subtitle Editor: " + currentFile.getName());
 
 			in = new Subtitles(new ArrayList<SubtitleItem>());
