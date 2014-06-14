@@ -3,10 +3,10 @@ package com.ii.subtitle.output;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class SubtitleSingleLineTextWriter extends AbstractSubtitlesWriter
+public class SingleLineTextWriter extends AbstractSubtitlesWriter
 {
 
-	public SubtitleSingleLineTextWriter(OutputStream stream)
+	public SingleLineTextWriter(OutputStream stream)
 	{
 		super(stream);
 	}

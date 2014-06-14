@@ -47,11 +47,11 @@ public class SubsTableModel extends AbstractTableModel
 			case 0: 
 				return rowIndex + 1;
 			case 1:
-				return subsList.getStart(rowIndex);
+				return SubtitleFormatUtils.getStart(subsList, rowIndex);
 			case 2:
-				return subsList.getEnd(rowIndex);
+				return SubtitleFormatUtils.getEnd(subsList, rowIndex);
 			case 3:
-				return subsList.getSubtitleTextSingleLine(rowIndex);
+				return SubtitleFormatUtils.getSubtitleTextSingleLine(subsList, rowIndex);
 			default:
 				return null;
 		}

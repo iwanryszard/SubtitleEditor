@@ -1,22 +1,21 @@
 package com.ii.subtitle.output;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
-import com.ii.subtitle.model.SubtitleItem;
 import com.ii.subtitle.model.SubtitleText;
 import com.ii.subtitle.model.SubtitleTextVisitor;
+import com.ii.subtitle.model.Subtitles;
 import com.ii.subtitle.model.TextGroup;
 import com.ii.subtitle.model.TextLeaf;
 import com.ii.subtitle.model.SubtitleText.Type;
 
-public class SubtitlesWriteDirector implements SubtitleTextVisitor
+public class WriteDirector implements SubtitleTextVisitor
 {
 
-	private ArrayList<SubtitleItem> subtitles;
-	private AbstractSubtitlesWriter writer;
+	protected Subtitles subtitles;
+	protected AbstractSubtitlesWriter writer;
 
-	public SubtitlesWriteDirector(ArrayList<SubtitleItem> subtitles, AbstractSubtitlesWriter writer)
+	public WriteDirector(Subtitles subtitles, AbstractSubtitlesWriter writer)
 	{
 		this.subtitles = subtitles;
 		this.writer = writer;
@@ -29,12 +28,7 @@ public class SubtitlesWriteDirector implements SubtitleTextVisitor
 			writer.onGenerationStart();
 			for (int i = 0; i < subtitles.size(); i++)
 			{
-				SubtitleItem item = subtitles.get(i);
-				writer.onSubtitleStarted(i);
-				writer.onSubtitleStartDuration(item.getStart());
-				writer.onSubtitleEndDuration(item.getEnd());
-				writeSubtitleText(item.getText());
-				writer.onSubtitleEnded(i);
+				writeItem(i);
 			}
 			writer.onGenerationEnd();
 
@@ -53,6 +47,15 @@ public class SubtitlesWriteDirector implements SubtitleTextVisitor
 		}
 
 	}
+
+	protected void writeItem(int i) throws IOException
+    {
+	    writer.onSubtitleStarted(i);
+	    writer.onSubtitleStartDuration(subtitles.getStart(i));
+	    writer.onSubtitleEndDuration(subtitles.getEnd(i));
+	    writeSubtitleText(subtitles.getText(i));
+	    writer.onSubtitleEnded(i);
+    }
 
 	private void writeSubtitleText(SubtitleText text) throws IOException
 	{

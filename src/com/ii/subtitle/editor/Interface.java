@@ -48,7 +48,7 @@ import com.ii.subtitle.model.Subtitles;
 import com.ii.subtitle.output.AbstractSubtitlesWriter;
 import com.ii.subtitle.output.SrtWriter;
 import com.ii.subtitle.output.SubWriter;
-import com.ii.subtitle.output.SubtitlesWriteDirector;
+import com.ii.subtitle.output.WriteDirector;
 
 import javax.swing.JTextField;
 
@@ -601,7 +601,7 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		{
 			AbstractSubtitlesWriter writer = currentFile.getPath().endsWith(".sub") ? new SubWriter(currentFile, in.getFrameRatePerSecond())
 					: new SrtWriter(currentFile);
-			SubtitlesWriteDirector direcotr = new SubtitlesWriteDirector(in, writer);
+			WriteDirector direcotr = new WriteDirector(in, writer);
 			direcotr.write();
 		}
 		else
@@ -654,7 +654,7 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		if (getStartSelectionIndex() >= 0)
 		{
 			TextArea.setContentType(edit ? "text/plain" : "text/html");
-			TextArea.setText(in.getSubtitleHTMLFormattedText(getStartSelectionIndex(), edit));
+			TextArea.setText(SubtitleFormatUtils.getSubtitleHTMLText(in, getStartSelectionIndex(), edit));
 		}
 	}
 
@@ -699,13 +699,13 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		int selectedIndex = this.getStartSelectionIndex();
 		int endIndex = this.getEndSelectionIndex();
 
-		startField.setText(selectedIndex > 0 ? in.getStart(selectedIndex) : (in.isInFrames() ? "0" : "00:00:00,000"));
-		endField.setText(selectedIndex > 0 ? in.getEnd(selectedIndex) : (in.isInFrames() ? "0" : "00:00:00,000"));
-		durationField.setText(selectedIndex > 0 ? in.getDuration(selectedIndex) : (in.isInFrames() ? "0" : "00:00:00,000"));
+		startField.setText(selectedIndex > 0 ?  SubtitleFormatUtils.getStart(in, selectedIndex) : (in.isInFrames() ? "0" : "00:00:00,000"));
+		endField.setText(selectedIndex > 0 ? SubtitleFormatUtils.getEnd(in, selectedIndex) : (in.isInFrames() ? "0" : "00:00:00,000"));
+		durationField.setText(selectedIndex > 0 ? SubtitleFormatUtils.getDuration(in, selectedIndex) : (in.isInFrames() ? "0" : "00:00:00,000"));
 		setTextAreaMode(false);
 
-		interpolateStartInterval.setText(selectedIndex > 0 ? in.getStart(selectedIndex) : (in.isInFrames() ? "0" : "00:00:00,000"));
-		interpolateEndInterval.setText(endIndex > 0 ? in.getStart(endIndex) : (in.isInFrames() ? "0" : "00:00:00,000"));
+		interpolateStartInterval.setText(selectedIndex > 0 ? SubtitleFormatUtils.getStart(in, selectedIndex) : (in.isInFrames() ? "0" : "00:00:00,000"));
+		interpolateEndInterval.setText(endIndex > 0 ? SubtitleFormatUtils.getStart(in, endIndex) : (in.isInFrames() ? "0" : "00:00:00,000"));
 
 		this.translateTextField.setText((in.isInFrames() ? "0" : "00:00:00,000"));
 
@@ -784,7 +784,7 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		else if (e.getSource().equals(editButton))
 		{
 			String contentType = TextArea.getContentType();
-			String text = contentType.equals("text/html") ? in.getSubtitleHTMLFormattedText(getStartSelectionIndex(), false) : TextArea.getText();
+			String text = contentType.equals("text/html") ? SubtitleFormatUtils.getSubtitleHTMLText(in, getStartSelectionIndex(), false) : TextArea.getText();
 			TextArea.setContentType("text/html");
 
 			command = new UpdateCommand(this, in, text, startField.getText(), endField.getText(), durationField.getText());

@@ -1,6 +1,5 @@
 package com.ii.subtitle.editor.commands;
 
-import com.ii.subtitle.model.SubtitleItem;
 import com.ii.subtitle.model.Subtitles;
 
 public class SwitchModeCommand extends AbstractSubtitlesCommand
@@ -14,12 +13,12 @@ public class SwitchModeCommand extends AbstractSubtitlesCommand
 		this.subtitles.setInFrames(this.isInFrames);
 		this.subtitles.setFrameRatePerSecond(framesPerSec);
 		double factor = this.isInFrames ? (framesPerSec / 1000) : (1000 / framesPerSec);
-		for (SubtitleItem item : this.subtitles)
+		for (int i = 0; i < this.subtitles.size(); i++)
 		{
-			int start = (int) Math.round(item.getStart() * factor);
-			int end = (int) Math.round(item.getEnd() * factor);
-			item.setStart(start);
-			item.setEnd(end);
+			int itemStart = (int) Math.round(this.subtitles.getStart(i) * factor);
+			int itemEnd = (int) Math.round(this.subtitles.getEnd(i) * factor);
+			this.subtitles.setStart(i, itemStart);
+			this.subtitles.setEnd(i, itemEnd);
 		}
 	}
 

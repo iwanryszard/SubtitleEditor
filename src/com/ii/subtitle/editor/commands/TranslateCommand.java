@@ -1,6 +1,5 @@
 package com.ii.subtitle.editor.commands;
 
-import com.ii.subtitle.model.SubtitleItem;
 import com.ii.subtitle.model.Subtitles;
 
 public class TranslateCommand extends AbstractSubtitlesCommand
@@ -23,9 +22,8 @@ public class TranslateCommand extends AbstractSubtitlesCommand
 		int end = Math.min(secondSelIndex, this.subtitles.size() - 1);
 		for (int i = start; i <= end; i++)
 		{
-			SubtitleItem item = this.subtitles.get(i);
-			item.setStart(item.getStart() + translate);
-			item.setEnd(item.getEnd() + translate);
+			this.subtitles.setStart(i, this.subtitles.getStart(i) + translate);
+			this.subtitles.setEnd(i, this.subtitles.getEnd(i) + translate);
 		}
 	}
 	

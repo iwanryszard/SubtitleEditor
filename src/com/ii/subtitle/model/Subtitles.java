@@ -1,30 +1,12 @@
 package com.ii.subtitle.model;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.ii.subtitle.output.SrtWriter;
-import com.ii.subtitle.output.SubtitleHTMLWriter;
-import com.ii.subtitle.output.SubtitleSingleLineTextWriter;
-import com.ii.subtitle.output.SubtitlesWriteDirector;
 
 public class Subtitles extends ArrayList<SubtitleItem>
 {
 	
 	private static final long serialVersionUID = 8057481440980075348L;
-
-	public static String getFormatedOffset(int offset, boolean isFrames)
-	{
-		if(isFrames)
-		{
-			return String.valueOf(offset);
-		}
-		else
-		{
-			return SrtWriter.getSrtStringDuration(offset);
-		}
-	}
 	
 	private SubtitleFormat format;
 	private double frameRatePerSecond;
@@ -79,42 +61,35 @@ public class Subtitles extends ArrayList<SubtitleItem>
 	public void setInFrames(boolean isFrames){
 		this.isFrames = isFrames;
 	}
-
-	public String getSubtitleTextSingleLine(int index)
+	
+	public int getStart(int index)
 	{
-		SubtitleItem item = this.get(index);
-		ArrayList<SubtitleItem> sub = new ArrayList<>();
-		sub.add(item);
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		SubtitlesWriteDirector director = new SubtitlesWriteDirector(sub, new SubtitleSingleLineTextWriter(stream));
-		director.write();
-		return new String(stream.toByteArray());
+		return this.get(index).getStart();
 	}
 	
-	public String getSubtitleHTMLFormattedText(int index, boolean edit)
+	public void setStart(int index, int start)
 	{
-		SubtitleItem item = this.get(index);
-		ArrayList<SubtitleItem> sub = new ArrayList<>();
-		sub.add(item);
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		SubtitlesWriteDirector director = new SubtitlesWriteDirector(sub, new SubtitleHTMLWriter(stream, !edit));
-		director.write();
-		return new String(stream.toByteArray());
+		this.get(index).setStart(start);
 	}
 	
-	public String getStart(int index)
+	public int getEnd(int index)
 	{
-		return getFormatedOffset(this.get(index).getStart(), isFrames);
+		return this.get(index).getEnd();
 	}
 	
-	public String getEnd(int index)
+	public void setEnd(int index, int end)
 	{
-		return getFormatedOffset(this.get(index).getEnd(), isFrames);
+		this.get(index).setEnd(end);
 	}
 	
-	public String getDuration(int index)
+	public int getDuration(int index)
 	{
-		return getFormatedOffset(Math.max(0, this.get(index).getEnd() - this.get(index).getStart()), isFrames);
+		return this.get(index).getEnd() - this.get(index).getStart();
+	}
+	
+	public SubtitleText getText(int index)
+	{
+		return this.get(index).getText();
 	}
 	
 	public SubtitleFormat getFormat()

@@ -1,6 +1,5 @@
 package com.ii.subtitle.editor.commands;
 
-import com.ii.subtitle.model.SubtitleItem;
 import com.ii.subtitle.model.Subtitles;
 
 public class InterpolateCommand extends AbstractSubtitlesCommand
@@ -17,19 +16,19 @@ public class InterpolateCommand extends AbstractSubtitlesCommand
 		startIndex = Math.max(0, startIndex);
 		int endIndex = Math.min(startIndex + count - 1, this.subtitles.size() - 1);
 		
-		int oldStart = this.subtitles.get(startIndex).getStart();
-		int oldEnd = this.subtitles.get(endIndex).getStart();
+		int oldStart = this.subtitles.getStart(startIndex);
+		int oldEnd = this.subtitles.getStart(endIndex);
 		
 		//start = a * oldStart + b
 		//end = a * oldEnd + b
 		double a = (end - start) / (double) (oldEnd - oldStart);
 		double b = end - a * oldEnd;
-		
 		for (int i = startIndex; i <= endIndex; i++)
 		{
-			SubtitleItem item = this.subtitles.get(i);
-			item.setStart((int) Math.round(item.getStart() * a + b));
-			item.setEnd((int) Math.round(item.getEnd() * a + b));
+			int itemStart = (int) Math.round(this.subtitles.getStart(i) * a + b);
+			int itemEnd = (int) Math.round(this.subtitles.getEnd(i) * a + b);
+			this.subtitles.setStart(i, itemStart);
+			this.subtitles.setEnd(i, itemEnd);
 		}
 	}
 	

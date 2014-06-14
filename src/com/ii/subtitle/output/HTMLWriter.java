@@ -3,12 +3,12 @@ package com.ii.subtitle.output;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class SubtitleHTMLWriter extends SrtWriter
+public class HTMLWriter extends SrtWriter
 {
 
 	private boolean addCenteredTag;
 
-	public SubtitleHTMLWriter(OutputStream stream, boolean center)
+	public HTMLWriter(OutputStream stream, boolean center)
 	{
 		super(stream);
 		addCenteredTag = center;
