@@ -192,17 +192,8 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 			}
 		});
 
-		FPSComboBox
-				.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "15", "20", "23,976", "23,978", "24", "25", "29,97", "30" }));
+		FPSComboBox.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "15", "20", "23,976", "23,978", "24", "25", "29,97", "30" }));
 		FPSComboBox.setSelectedIndex(2);
-		FPSComboBox.addActionListener(new java.awt.event.ActionListener()
-		{
-			@Override
-			public void actionPerformed(java.awt.event.ActionEvent evt)
-			{
-				setFPS();
-			}
-		});
 
 		final SubsTableModel model = new SubsTableModel(in);
 		jTable2.setModel(model);
@@ -567,26 +558,11 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		if (in.isInFrames())
 		{
 			double fps = in.getFrameRatePerSecond();
-			if (fps == 15)
-				FPSComboBox.setSelectedIndex(0);
-			if (fps == 20)
-				FPSComboBox.setSelectedIndex(1);
-			if (fps == 23.976)
-				FPSComboBox.setSelectedIndex(2);
-			if (fps == 23.978)
-				FPSComboBox.setSelectedIndex(3);
-			if (fps == 24)
-				FPSComboBox.setSelectedIndex(4);
-			if (fps == 25)
-				FPSComboBox.setSelectedIndex(5);
-			if (fps == 29.97)
-				FPSComboBox.setSelectedIndex(6);
-			if (fps == 30)
-				FPSComboBox.setSelectedIndex(7);
+			this.setFrameRatePerSecond(fps);
 		}
 		if (in.getFrameRatePerSecond() == -1)
 		{
-			setFPS();
+			in.setFrameRatePerSecond(this.getFrameRatePerSecond());
 		}
 		isSaved = true;
 		this.updateControls();
@@ -622,7 +598,7 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 			boolean isSRT = currentFile.getPath().endsWith(".srt");
 			if (isSRT == in.isInFrames())
 			{
-				SwitchModeCommand switchMode = new SwitchModeCommand(this, in, in.getFrameRatePerSecond(), !isSRT);
+				SwitchModeCommand switchMode = new SwitchModeCommand(this, in, this.getFrameRatePerSecond(), !isSRT);
 				CommandController controller = CommandController.getInstance();
 				controller.executeCommand(switchMode);
 			}
@@ -638,15 +614,6 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 			setTitle("Subtitle Editor: " + currentFile.getName());
 		}
 		return returnVal == JFileChooser.APPROVE_OPTION;
-	}
-
-	private void setFPS()
-	{
-		float[] framesPerSecondChoices = {15, 20, 23.976f, 23.978f, 24, 25, 29.97f, 30};
-		if (FPSComboBox.getSelectedIndex() > 0)
-		{
-			in.setFrameRatePerSecond(framesPerSecondChoices[FPSComboBox.getSelectedIndex()]);
-		}
 	}
 
 	private void setTextAreaMode(boolean edit)
@@ -751,6 +718,33 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 	}
 
 	@Override
+    public void setFrameRatePerSecond(double value)
+    {
+		if (value == 15)
+			FPSComboBox.setSelectedIndex(0);
+		if (value == 20)
+			FPSComboBox.setSelectedIndex(1);
+		if (value == 23.976)
+			FPSComboBox.setSelectedIndex(2);
+		if (value == 23.978)
+			FPSComboBox.setSelectedIndex(3);
+		if (value == 24)
+			FPSComboBox.setSelectedIndex(4);
+		if (value == 25)
+			FPSComboBox.setSelectedIndex(5);
+		if (value == 29.97)
+			FPSComboBox.setSelectedIndex(6);
+		if (value == 30)
+			FPSComboBox.setSelectedIndex(7);
+    }
+	
+    public double getFrameRatePerSecond()
+    {
+		float[] framesPerSecondChoices = {15, 20, 23.976f, 23.978f, 24, 25, 29.97f, 30};
+		return framesPerSecondChoices[FPSComboBox.getSelectedIndex()];
+    }
+
+	@Override
 	public void actionPerformed(ActionEvent e)
 	{
 		Command command = null;
@@ -791,7 +785,7 @@ public class Interface extends javax.swing.JFrame implements CommandActionsHandl
 		}
 		else if (e.getSource().equals(timeRadioButton) || e.getSource().equals(framesRadioButton))
 		{
-			command = new SwitchModeCommand(this, in, in.getFrameRatePerSecond(), !in.isInFrames());
+			command = new SwitchModeCommand(this, in, this.getFrameRatePerSecond(), !in.isInFrames());
 		}
 		else if (e.getSource().equals(saveAsButton))
 		{

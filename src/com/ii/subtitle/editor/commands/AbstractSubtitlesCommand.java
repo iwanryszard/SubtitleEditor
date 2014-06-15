@@ -38,6 +38,8 @@ public abstract class AbstractSubtitlesCommand implements Command
 		int getEndSelectionIndex();
 
 		void setSelection(int start, int end);
+		
+		void setFrameRatePerSecond(double value);
 	}
 
 }
